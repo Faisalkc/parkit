@@ -5,8 +5,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkit/parking/appdetails.dart';
 import 'package:location/location.dart';
 import 'package:parkit/parking/MarkersForPaking.dart';
+import 'package:parkit/screens/CheckAvailabilityScreen.dart';
+import 'package:parkit/screens/CheckoutScreen.dart';
+import 'package:parkit/screens/ParkingUserDetails.dart';
 
-void main() => runApp(MyApp());
+import 'package:intl/date_symbol_data_local.dart';
+
+void main() {
+  initializeDateFormatting().then((_) => runApp(MyApp()));
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -17,7 +24,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: ApplicationDetails.app_name,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+          fontFamily: 'Songer',
+          primarySwatch: Colors.grey
       ),
       home: MyHomePage(),
     );
@@ -90,73 +98,76 @@ void mainUpdate()
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-      Container(
-        width: MediaQuery.of(context).size.width,height: MediaQuery.of(context).size.height,
-        child: Column(
 
-          children: <Widget>[
-            Stack(
+        bottomNavigationBar: ApplicationDetails().bottomAppBar(context),
+        body:
+        Container(
 
-              children: <Widget>[
-                Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: GoogleMap(
-                      markers: Set<Marker>.of(markers.values),
-                      myLocationEnabled: true,
+          child: Column(
+
+            children: <Widget>[
+              Stack(
+                overflow: Overflow.clip,
+                children: <Widget>[
+                  Container(
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height - 86,
+                      child: GoogleMap(
+                        markers: Set<Marker>.of(markers.values),
+                        myLocationEnabled: true,
 
 //                    mapType: MapType.hybrid,
-                      initialCameraPosition: _kGooglePlex,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-                      },
-                      compassEnabled: false,
-                    )),
-                Padding(
-                  padding: EdgeInsets.all(32),
-                  child: TextField(
+                        initialCameraPosition: _kGooglePlex,
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                        },
+                        compassEnabled: false,
+                      )),
+                  Padding(
+                    padding: EdgeInsets.all(32),
+                    child: TextField(
 
-                    keyboardAppearance: Brightness.light,
-                    decoration: InputDecoration(
-                        enabled: true,
-                        suffixIcon: InkResponse(
-                          child: Icon(
-                            Icons.my_location,
-                            color: ApplicationDetails.primaryColor,
+                      keyboardAppearance: Brightness.light,
+                      decoration: InputDecoration(
+                          enabled: true,
+                          suffixIcon: InkResponse(
+                            child: Icon(
+                              Icons.my_location,
+                              color: ApplicationDetails.primaryColor,
+                            ),
+                            onTap: () async {
+                              await loc();
+                              markers.addAll(
+                                  await ParkingMarker(context: context)
+                                      .getMarkers(newLoc));
+                              await _goToTheLake();
+
+                              mainUpdate();
+                            },
+                            onDoubleTap: () async {},
                           ),
-                          onTap: () async {
-
-                            await loc();
-                            markers.addAll(await ParkingMarker().getMarkers(newLoc));
-                            await _goToTheLake();
-
-                            mainUpdate();
-
-
-                          },
-                          onDoubleTap: () async {
-                          },
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 2,
-                                style: BorderStyle.solid),
-                            borderRadius: BorderRadius.circular(20)),
-                        hintText: 'we are near to you',
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.yellow,
-                                width: 20,
-                                style: BorderStyle.solid),
-                            borderRadius: BorderRadius.circular(20))),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 2,
+                                  style: BorderStyle.solid),
+                              borderRadius: BorderRadius.circular(20)),
+                          hintText: 'we are near to you',
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.yellow,
+                                  width: 20,
+                                  style: BorderStyle.solid),
+                              borderRadius: BorderRadius.circular(20))),
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
-        ),
-      )
+                ],
+              )
+            ],
+          ),
+        )
     );
   }
 
