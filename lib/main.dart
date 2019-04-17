@@ -5,11 +5,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkit/parking/appdetails.dart';
 import 'package:location/location.dart';
 import 'package:parkit/parking/MarkersForPaking.dart';
-import 'package:parkit/screens/CheckAvailabilityScreen.dart';
-import 'package:parkit/screens/CheckoutScreen.dart';
-import 'package:parkit/screens/ParkingUserDetails.dart';
+
 
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:parkit/screens/ListParkingArea.dart';
+import 'package:parkit/screens/auth/auth_page.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(MyApp()));
@@ -99,7 +99,7 @@ void mainUpdate()
   Widget build(BuildContext context) {
     return Scaffold(
 
-        bottomNavigationBar: ApplicationDetails().bottomAppBar(context),
+        bottomNavigationBar: bottomAppBar(context),
         body:
         Container(
 
@@ -107,7 +107,7 @@ void mainUpdate()
 
             children: <Widget>[
               Stack(
-                overflow: Overflow.clip,
+//                overflow: Overflow.clip,
                 children: <Widget>[
                   Container(
                       height: MediaQuery
@@ -138,7 +138,7 @@ void mainUpdate()
                               color: ApplicationDetails.primaryColor,
                             ),
                             onTap: () async {
-                              await loc();
+                              loc();
                               markers.addAll(
                                   await ParkingMarker(context: context)
                                       .getMarkers(newLoc));
@@ -173,5 +173,36 @@ void mainUpdate()
 
   @override
   void initState() {
+
+  }
+
+  BottomNavigationBar bottomAppBar(BuildContext context) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      items: [
+        BottomNavigationBarItem(icon: Icon(Icons.language), title: Text('')),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.local_parking), title: Text('')),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite), title: Text('')),
+        BottomNavigationBarItem(icon: Icon(Icons.person), title: Text(''))
+      ],
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            break;
+          case 1:
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => ListParkingArea()));
+            break;
+          case 2:
+            break;
+          case 3:
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => AuthPage()));
+            break;
+        }
+      },
+
+    );
   }
 }

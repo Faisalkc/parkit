@@ -184,7 +184,7 @@ class _ParkingDetialsState extends State<ParkingDetials> {
               child: MaterialButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext) => CheckAvailability()));
+                      builder: (context) => CheckAvailability()));
                 },
                 color: Colors.green,
                 child: Text(
