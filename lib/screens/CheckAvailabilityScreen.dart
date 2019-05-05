@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:parkit/Widget/AvailableTimings.dart';
+import 'package:parkit/parking/Timing.dart';
 import 'package:parkit/screens/CheckoutScreen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CheckAvailability extends StatefulWidget {
   DateTime todaysDate;
+  String parkinSpotId;
 
-  CheckAvailability() {
+  CheckAvailability(this.parkinSpotId ) {
     todaysDate = DateTime.now();
   }
 
@@ -15,26 +17,33 @@ class CheckAvailability extends StatefulWidget {
 }
 
 class _CheckAvailabilityState extends State<CheckAvailability> {
+  List<Timing> _availableTiming=[];
+  bool _isLoading = true;
   GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
   bool available = false;
-  String _selectedDate = '';
+  String _selectedDate ;
   Map<DateTime, List> listofEvents = {
-    DateTime.now(): [
-      'booked',
-      'booked',
-      'booked',
-      'booked',
-      'booked',
-      'booked',
-      'booked',
-      'booked',
-      'booked',
-      'booked',
-      'booked'
-    ],
-    DateTime.now().add(Duration(days: 1)): ['ahmed', 'ali']
   };
+  void startLoading() {
+    setState(() {
+      _isLoading = true;
+    });
+  }
 
+  void stopLoading() {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+
+  @override
+  void initState() {
+    DateTime now = DateTime.now();
+
+    _selectedDate="${now.year}-${now.month}-${now.day}";
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,11 +70,11 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
             events: listofEvents,
             onDaySelected: (date, List) {
               setState(() {
-                _selectedDate = date.day.toString() +
-                    '/' +
+                _selectedDate = date.year.toString() +
+                    '-' +
                     date.month.toString() +
-                    '/' +
-                    date.year.toString();
+                    '-' +
+                    date.day.toString();
                 available = true;
               });
             },
@@ -88,7 +97,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
                   ),
                 )
               : Text(''),
-          ShowAvailableTiming(),
+         ShowAvailableTiming(onDateAvailability: _selectedDate,parkinSpotId: widget.parkinSpotId,),
           RaisedButton(
             onPressed: () {
               ShowAvailableTiming.selectedtimting.length > 0

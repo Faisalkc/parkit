@@ -1,27 +1,58 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:parkit/parking/Timing.dart';
 
 class ShowAvailableTiming extends StatefulWidget {
   static List<Timing> selectedtimting = [];
+  String onDateAvailability;
+  String parkinSpotId;
+  ShowAvailableTiming({this.parkinSpotId,this.onDateAvailability});
 
   @override
   _ShowAvailableTimingState createState() => _ShowAvailableTimingState();
 }
 
 class _ShowAvailableTimingState extends State<ShowAvailableTiming> {
-  List<Timing> timingList = [];
-
+ 
+   List<Timing> timingList = [
+     
+   ];
   @override
   void initState() {
-    timingList.add(Timing(from: '09:00am', to: '9:30am', isAvailable: true));
-    timingList.add(Timing(from: '09:30am', to: '10:00am', isAvailable: true));
+loadingFirebaseData();
     super.initState();
   }
+  Future<bool> loadingFirebaseData()async
+  {
 
+    final notesReference= FirebaseDatabase.instance.reference().child('parkit').child(widget.parkinSpotId).child("availability").child("Dates").child(widget.onDateAvailability);
+    notesReference.once().then((DataSnapshot snapshot)
+    {
+      timingList.removeRange(0, timingList.length);
+       Map<dynamic, dynamic> values = snapshot.value;
+         values.forEach((key,val){
+            List _splitedtime=key.toString().split(":");
+           setState(() {
+
+              timingList.add(Timing(int.parse(_splitedtime[0]),int.parse(_splitedtime[1]),true ));
+           });
+    
+       }
+         
+       );
+    }).catchError((onError)=>print(onError));
+    timingList.sort((a,b)=>a.from.compareTo(b.from));
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
-    if (timingList.length > 0) {
-      return Container(
+      return FutureBuilder(
+        future: loadingFirebaseData(),
+        initialData: CircularProgressIndicator(),
+        builder: (BuildContext context,snapshot){
+          return
+          
+           Container(
         height: 30,
         width: double.infinity,
         child: ListView.builder(
@@ -36,10 +67,10 @@ class _ShowAvailableTimingState extends State<ShowAvailableTiming> {
                     ShowAvailableTiming.selectedtimting
                         .remove(timingList[index]);
                   }
-                  setState(() {
-                    timingList[index].isAvailable =
-                        !timingList[index].isAvailable;
-                  });
+                  // setState(() {
+                  //   timingList[index].isAvailable =
+                  //       !timingList[index].isAvailable;
+                  // });
                 },
                 child: Padding(
                   padding: EdgeInsets.only(left: 20),
@@ -79,8 +110,8 @@ class _ShowAvailableTimingState extends State<ShowAvailableTiming> {
               );
             }),
       );
-    } else {
-      return Text('Sorry all bookings are filled');
-    }
+        },
+      );
+    
   }
 }

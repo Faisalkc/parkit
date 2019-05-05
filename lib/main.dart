@@ -2,33 +2,33 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:parkit/parking/appdetails.dart';
+import 'package:parkit/Widget/customBottomNavigation.dart';
 import 'package:location/location.dart';
-import 'package:parkit/parking/MarkersForPaking.dart';
-
-
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:parkit/screens/ListParkingArea.dart';
-import 'package:parkit/screens/auth/auth_page.dart';
+import 'package:parkit/screens/auth/user_profile.dart';
+import 'package:parkit/screens/listingScreen/Listing.dart';
+import 'package:parkit/resources/repository.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: ApplicationDetails.app_name,
-      theme: ThemeData(
-          fontFamily: 'Songer',
-          primarySwatch: Colors.grey
-      ),
-      home: MyHomePage(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Parkit',
+        routes:
+        {
+          '/': (context) => MyHomePage(),
+          '/ListAPark':(context)=>Listing_page(),
+          '/userProfile':(context)=>UserDetails(),
+        },
+        theme: ThemeData(fontFamily: 'Raleway', primarySwatch: Colors.grey),
+       );
   }
 }
 
@@ -37,31 +37,50 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+typedef Marker MarkerUpdateAction(Marker marker);
+
 class _MyHomePageState extends State<MyHomePage> {
-  Completer<GoogleMapController> _controller = Completer();
-  static LatLng newLoc = LatLng(37.43296265331129, -122.08832357078792);
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+  static LatLng center = const LatLng(-33.86711, 151.1947171);
 
-    zoom: 15.4746,
-  );
-  static CameraPosition _kLake = CameraPosition(
-    bearing: 192.8334901395799,
-    target: newLoc,
-//    tilt: 59.440717697143555,
-    zoom: 18.151926040649414,
-  );
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  GoogleMapController controller;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  MarkerId selectedMarker;
+  Repository _reposioty=Repository();
+
+  void _onMapCreated(GoogleMapController controller) {
+    this.controller = controller;
   }
-void mainUpdate()
-{
-  setState(() {
 
-  });
+@override
+void initState() {
+    loc().then((onValue){
+      setState(() {
+       center=onValue; 
+        checkingforlocatiuon();
+      });
+     });
+    super.initState();
+  }
+  @override
+  void dispose() {
+
+    super.dispose();
+
+  }
+
+ Future<void> _goToTheLake() async {
+   controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: center,zoom: 15)));
+ }
+void checkingforlocatiuon()async
+{
+   _reposioty.getMarkers(center, context).then((val)=> setState(() {
+   markers=val;
+  }));
+
 }
-  void loc() async {
+
+
+  Future<LatLng> loc() async {
     LocationData currentLocation;
 
     var location = new Location();
@@ -87,74 +106,48 @@ void mainUpdate()
       currentLocation = null;
     }
 
-    newLoc = LatLng(currentLocation.latitude, currentLocation.longitude);
-
-    print(" ${currentLocation.latitude} : ${currentLocation.longitude}");
+    setState(() {
+     center = LatLng(currentLocation.latitude, currentLocation.longitude); 
+    });
+    print(currentLocation.latitude.toString() +'' +currentLocation.longitude.toString());
+    return LatLng(currentLocation.latitude, currentLocation.longitude);
   }
+  
 
-
-
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-        bottomNavigationBar: bottomAppBar(context),
-        body:
-        Container(
-
-          child: Column(
-
-            children: <Widget>[
-              Stack(
-//                overflow: Overflow.clip,
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.my_location),
+        onPressed: ()=>loc().then((val){_goToTheLake();checkingforlocatiuon();}),
+      ),
+        bottomNavigationBar: bottomAppBar(context,0),
+        body: Stack(
+               overflow: Overflow.clip,
                 children: <Widget>[
                   Container(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height - 86,
+                      height: MediaQuery.of(context).size.height,
                       child: GoogleMap(
-                        markers: Set<Marker>.of(markers.values),
-                        myLocationEnabled: true,
 
-//                    mapType: MapType.hybrid,
-                        initialCameraPosition: _kGooglePlex,
-                        onMapCreated: (GoogleMapController controller) {
-                          _controller.complete(controller);
-                        },
-                        compassEnabled: false,
+                        onMapCreated: _onMapCreated,
+                        initialCameraPosition:  CameraPosition(
+                          target: center,
+                          zoom: 11.0,
+                        ),
+                        markers: Set<Marker>.of(markers.values),
                       )),
                   Padding(
                     padding: EdgeInsets.all(32),
                     child: TextField(
-
                       keyboardAppearance: Brightness.light,
                       decoration: InputDecoration(
                           enabled: true,
-                          suffixIcon: InkResponse(
-                            child: Icon(
-                              Icons.my_location,
-                              color: ApplicationDetails.primaryColor,
-                            ),
-                            onTap: () async {
-                              loc();
-                              markers.addAll(
-                                  await ParkingMarker(context: context)
-                                      .getMarkers(newLoc));
-                              await _goToTheLake();
-
-                              mainUpdate();
-                            },
-                            onDoubleTap: () async {},
-                          ),
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Colors.black,
                                   width: 2,
                                   style: BorderStyle.solid),
                               borderRadius: BorderRadius.circular(20)),
-                          hintText: 'we are near to you',
+                          hintText: 'Search',
                           border: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Colors.yellow,
@@ -164,45 +157,9 @@ void mainUpdate()
                     ),
                   ),
                 ],
-              )
-            ],
-          ),
-        )
-    );
+              ));
   }
 
-  @override
-  void initState() {
 
-  }
 
-  BottomNavigationBar bottomAppBar(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.language), title: Text('')),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.local_parking), title: Text('')),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite), title: Text('')),
-        BottomNavigationBarItem(icon: Icon(Icons.person), title: Text(''))
-      ],
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            break;
-          case 1:
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => ListParkingArea()));
-            break;
-          case 2:
-            break;
-          case 3:
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => AuthPage()));
-            break;
-        }
-      },
-
-    );
-  }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parkit/Widget/AvailableTimings.dart';
-import 'package:parkit/main.dart';
 import 'package:parkit/parking/Timing.dart';
-import 'package:parkit/screens/auth/auth_page.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Checkout extends StatefulWidget {

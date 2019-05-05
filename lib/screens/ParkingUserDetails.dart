@@ -1,9 +1,14 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:parkit/parking/appdetails.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parkit/Widget/customBottomNavigation.dart';
 import 'package:parkit/screens/CheckAvailabilityScreen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ParkingDetials extends StatefulWidget {
+  MarkerId markerId;
+  ParkingDetials({this.markerId});
   @override
   _ParkingDetialsState createState() => _ParkingDetialsState();
 }
@@ -13,27 +18,30 @@ class _ParkingDetialsState extends State<ParkingDetials> {
 
   @override
   void initState() {
+    _search(widget.markerId);
     _controller = ScrollController();
     super.initState();
   }
 
   List<String> imageList = [
     "http://centurylightingsolutions.com/wp-content/uploads/bfi_thumb/shutterstock_48636268-1-t8xn3rbse7ret6l1j8jthc.jpg",
-    "https://www.trbimg.com/img-56799d21/turbine/ct-mre-1227-condo-adviser-20151222",
-    "https://urbanmatter.com/chicago/wp-content/uploads/2015/09/All-Day-Parking.jpg"
+
   ];
+ String  _userName='user';
+  double latitude=24, longitude=24;
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: ApplicationDetails().bottomAppBar(context),
+        bottomNavigationBar: bottomAppBar(context,0),
         body: ListView(
           children: <Widget>[
             SizedBox(
               width: double.infinity,
               height: 300,
               child: Swiper(
-                itemCount: 3,
+                itemCount: imageList.length,
                 controller: SwiperController(),
                 layout: SwiperLayout.STACK,
                 itemHeight: 300,
@@ -111,8 +119,13 @@ class _ParkingDetialsState extends State<ParkingDetials> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      Image.asset('assets/icons/location.png',
-                          fit: BoxFit.cover, width: 40)
+                      InkResponse(
+                        onTap: (){
+                          openMap(latitude, longitude);
+                        },
+                        child: Image.asset('assets/icons/location.png',
+                            fit: BoxFit.cover, width: 40),
+                      )
                     ],
                   ),
                 ],
@@ -139,7 +152,7 @@ class _ParkingDetialsState extends State<ParkingDetials> {
                             style: TextStyle(letterSpacing: 0.5, fontSize: 10),
                           ),
                           Text(
-                            'AHAMED',
+                            _userName,
                             style: TextStyle(
                                 letterSpacing: 2,
                                 fontSize: 10,
@@ -184,7 +197,7 @@ class _ParkingDetialsState extends State<ParkingDetials> {
               child: MaterialButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => CheckAvailability()));
+                      builder: (context) => CheckAvailability(widget.markerId.value.toString())));
                 },
                 color: Colors.green,
                 child: Text(
@@ -196,4 +209,38 @@ class _ParkingDetialsState extends State<ParkingDetials> {
           ],
         ));
   }
+
+  void _search( MarkerId markerId) async{
+    final notesReference= FirebaseDatabase.instance.reference().child('parkit').child(markerId.value.toString());
+    await  notesReference.once().then((DataSnapshot snapshot)
+    {
+      Map<dynamic, dynamic> values = snapshot.value;
+      print(values);
+      imageList.removeLast();
+      setState(() {
+        for(int i=0;i<values['images'].length;i++)
+        {
+          print(values['images'][i]);
+          imageList.add(values['images'][i]);
+
+        }
+        _userName=values['name'];
+        longitude=values['log'];
+        latitude=values['lat'];
+      });
+    });
+
+
+  }
+
+
+  void openMap(double latitude, double longitude) async {
+  String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+  if (await canLaunch(googleUrl)) {
+  await launch(googleUrl);
+  } else {
+  throw 'Could not open the map.';
+  }
+  }
+
 }
