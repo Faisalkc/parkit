@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:parkit/parking/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:parkit/resources/repository.dart';
+import 'package:parkit/screens/auth/otp_page.dart';
 
 class SignUpPage extends StatefulWidget {
   final Function changePage;
@@ -47,6 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 email: _useremail, password: _userPassword);
         UserUpdateInfo info = UserUpdateInfo();
         info.displayName = _userName;
+        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context)=>OtpPage(phoneNumber:_userphone ,)));
 
         user.updateProfile(info);
         await afterLogin();
@@ -90,6 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
             );
             final FirebaseUser user =
                 await _auth.signInWithCredential(credential);
+                widget.sncakbarMessages('Please Wait....'); 
                 await afterLogin();
             print("signed in " + user.displayName);
             Navigator.of(context).pop(false);
@@ -112,7 +114,9 @@ class _SignUpPageState extends State<SignUpPage> {
         final AuthCredential credential = FacebookAuthProvider.getCredential(
             accessToken: result.accessToken.token);
        await _auth.signInWithCredential(credential);
+      widget.sncakbarMessages('Please Wait....');
        await afterLogin();
+       Navigator.of(context).pop(false);
         break;
       case FacebookLoginStatus.cancelledByUser:
         widget.sncakbarMessages('CANCELED BY USER');

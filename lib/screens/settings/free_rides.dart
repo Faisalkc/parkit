@@ -22,7 +22,7 @@ class _FreeRidesViewState extends State<FreeRidesView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.grey,
           title: Text("Free Rides"),
         ),
         body: Container(
@@ -35,7 +35,7 @@ class _FreeRidesViewState extends State<FreeRidesView> {
                 height: 50,
               ),
               Text(
-                "Want more Uber",
+                "Want more ParkiT",
                 style: TextStyle(fontSize: 36),
               ),
               SizedBox(

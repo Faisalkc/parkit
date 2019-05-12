@@ -15,6 +15,7 @@ class ParkingModel extends BaseModel
     String documentId;
     AvailableModel availability;
     String customerName;
+    String parkingkey;
     ParkingModel.fromFirebase(dynamic snapshot)
     {
        this.location= LocationModel(LatLng(double.parse(snapshot['latitude'].toString()), double.parse(snapshot['longitude'].toString())), snapshot['address'], snapshot['city']);
@@ -28,6 +29,15 @@ class ParkingModel extends BaseModel
        this.userid=snapshot['userid'];
        this.spotname=snapshot['spotname'];
        this.description=snapshot['description'];
+    try {
+        if (snapshot['availability']!=null) 
+      {
+        print(snapshot['availability']);
+        this.availability=AvailableModel.fromFirebase(snapshot['availability']);
+      }
+      
+    } catch (e) {
+    }
         
     }
     ParkingModel({this.spotname,this.description,this.imageToupload,this.location,});

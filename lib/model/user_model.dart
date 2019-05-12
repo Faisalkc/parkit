@@ -11,7 +11,10 @@ class UserModel extends BaseModel {
   bool isVerified;
   String photoUrl;
   String uid;
-  UserModel.fromSearching();
+  UserModel.fromSearching()
+  {
+    this.displayName='Not Found';
+  }
   UserModel({this.displayName, this.email, this.mobile});
   UserModel.fromFirebase(
       {this.uid,

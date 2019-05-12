@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "782181801494",
+    "firebase_url": "https://parkit-3faec.firebaseio.com",
+    "project_id": "parkit-3faec",
+    "storage_bucket": "parkit-3faec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782181801494:android:eb96fff1f68577b5",
+        "android_client_info": {
+          "package_name": "com.mvpapps.parkit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782181801494-cpntjsbc4pt4ik5pgfqpb1i01oc3b76h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDf7f9qzGpvN80UE1cAYqTnVlsXFXsMyzk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782181801494-cpntjsbc4pt4ik5pgfqpb1i01oc3b76h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "782181801494-hb3j3i6n8n3fsj7aq1dm1tfonkgo9iol.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mvpapps.parkit"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

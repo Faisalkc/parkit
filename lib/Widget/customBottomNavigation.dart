@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
           Navigator.of(context).pushNamed('/');
             break;
           case 1:
-           Navigator.of(context).pushNamed('/');
+           Navigator.of(context).pushNamed('/favorites');
             break;
           case 2:
           Navigator.of(context).pushNamed('/userProfile');

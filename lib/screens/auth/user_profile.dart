@@ -3,11 +3,9 @@ import 'package:parkit/Bloc/user_bloc.dart';
 import 'package:parkit/model/user_model.dart';
 import 'package:parkit/resources/repository.dart';
 import 'package:parkit/screens/auth/ProfilePage.dart';
-import 'package:parkit/screens/auth/animated_fab.dart';
 import 'package:parkit/screens/auth/auth_page.dart';
 import 'package:parkit/screens/auth/diagonal_clipper.dart';
-import 'package:parkit/screens/auth/initial_list.dart';
-import 'package:parkit/screens/auth/list_model.dart';
+import 'package:parkit/screens/settings/availability.dart';
 import 'package:parkit/screens/settings/free_rides.dart';
 import 'package:parkit/screens/settings/history.dart';
 import 'package:parkit/screens/settings/incompleteScreens.dart';
@@ -20,10 +18,8 @@ class UserDetails extends StatefulWidget {
 }
 
 class _UserDetailsState extends State<UserDetails> {
-  String _bgImage =
-      "https://video-images.vice.com/articles/5b4f7de5655528000c75b137/lede/1531936410875-shutterstock_521216080.jpeg";
+
   final double _imageHeight = 256.0;
-  ListModel listModel;
   bool showOnlyCompleted = false;
 
   @override
@@ -73,33 +69,14 @@ class _UserDetailsState extends State<UserDetails> {
     );
   }
 
-  Widget _buildFab() {
-    return new Positioned(
-        top: _imageHeight - 100.0,
-        right: -40.0,
-        child: new AnimatedFab(
-          onClick: _changeFilterState,
-        ));
-  }
-
-  void _changeFilterState() {
-    showOnlyCompleted = !showOnlyCompleted;
-    tasks.where((task) => !task.completed).forEach((task) {
-      if (showOnlyCompleted) {
-        listModel.removeAt(listModel.indexOf(task));
-      } else {
-        listModel.insert(tasks.indexOf(task), task);
-      }
-    });
-  }
 
   Widget _buildIamge() {
     return new Positioned.fill(
       bottom: null,
       child: new ClipPath(
         clipper: new DialogonalClipper(),
-        child: new Image.network(
-          _bgImage,
+        child: new Image.asset(
+          'assets/images/background.jpeg',
           fit: BoxFit.cover,
           height: _imageHeight,
           colorBlendMode: BlendMode.srcOver,
@@ -229,6 +206,16 @@ class _UserDetailsState extends State<UserDetails> {
             onTap: (){
               Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) =>
+            AddAvailability()));
+            },
+            trailing: Icon(Icons.add),
+            title: Text('Add Availability'),
+          ),
+          Divider(),
+          ListTile(
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) =>
             History()));
             },
             trailing: Icon(Icons.attach_money),
@@ -256,6 +243,7 @@ class _UserDetailsState extends State<UserDetails> {
           ),
           Divider(),
           ListTile(
+            onTap: ()=>Navigator.pushNamed(context, '/favorites'),
             trailing: Icon(Icons.notifications),
             title: Text('Favorites'),
           ),
@@ -365,8 +353,8 @@ class _UserDetailsState extends State<UserDetails> {
         children: <Widget>[
           ListTile(
             onTap: () {
-              _goToProfilePage(snapshot, context);
-            },
+            Navigator.of(context)
+.push(MaterialPageRoute(builder: (BuildContext context)=>LicensePage()));            },
             trailing: Icon(Icons.assignment),
             title: Text('Terms of Service'),
           ),

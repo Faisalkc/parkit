@@ -4,6 +4,8 @@ import 'package:parkit/Bloc/location_bloc.dart';
 import 'package:parkit/model/parking_spot_model.dart';
 import 'package:parkit/Bloc/customer_bloc.dart';
 import 'package:parkit/model/user_model.dart';
+import 'package:parkit/resources/repository.dart';
+import 'package:parkit/screens/booking/available_times.dart';
 
 class ParkingSpotDetails extends StatefulWidget {
   String parkingSpotKey;
@@ -61,17 +63,23 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
 
               flexibleSpace: FlexibleSpaceBar(
                   background: Container(
+                    height: 30,
                 child: Stack(
                   children: <Widget>[
                     Image.network(
                       snapshot.data.image[0],
                       fit: BoxFit.cover,
                       width: size.width,
+                      height: double.infinity,
+                      
                     ),
                     Positioned(
-                      child: Icon(
+                      child: InkResponse(
+                        onTap: ()=>repository.addToFavorites(widget.parkingSpotKey,),
+                        child: Icon(
                         Icons.favorite_border,
                         color: Colors.white,
+                      ),
                       ),
                       top: size.height / 5,
                       left: size.width - 40.0,
@@ -163,7 +171,7 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                                               return Text(
                                                 _cusData.data.displayName!=null?_cusData.data.displayName:'Try Again',
                                                 style: TextStyle(
-                                                    color: Color(0xFFFB7592)),
+                                                    color: Colors.black),
                                               );
                                             } else if (snapshot.hasError) {
                                               return Text(
@@ -194,7 +202,7 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                                       child: Text(
                                         snapshot.data.votes.toString(),
                                         style:
-                                            TextStyle(color: Color(0xFFFB7592)),
+                                            TextStyle(color: Colors.black),
                                       ),
                                     ),
                                   ],
@@ -209,7 +217,7 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                             children: <Widget>[
                               Icon(
                                 Icons.location_on,
-                                color: Color(0xFFFB7592),
+                                color: Colors.black,
                               ),
                               Text(
                                 snapshot.data.location.city,
@@ -220,31 +228,6 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                         ),
                       ],
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: <Widget>[
-                    //     Icon(
-                    //       Icons.group,
-                    //       color: Color(0xFFFB7592),
-                    //       size: 30.0,
-                    //     ),
-                    //     Icon(
-                    //       Icons.shopping_cart,
-                    //       color: Color(0xFFFB7592),
-                    //       size: 30.0,
-                    //     ),
-                    //     Icon(
-                    //       Icons.cake,
-                    //       color: Color(0xFFFB7592),
-                    //       size: 30.0,
-                    //     ),
-                    //     Icon(
-                    //       Icons.event_note,
-                    //       color: Color(0xFFFB7592),
-                    //       size: 30.0,
-                    //     ),
-                    //   ],
-                    // ),
                     Padding(
                       padding: const EdgeInsets.only(top: 15.0),
                       child: Column(
@@ -268,7 +251,7 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                             padding: const EdgeInsets.only(bottom: 10.0),
                             child: Text(
                               "Read More....",
-                              style: TextStyle(color: Color(0xFFFB7592)),
+                              style: TextStyle(color: Colors.black),
                             ),
                           ),
                         ],
@@ -317,8 +300,9 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
               //   shape: BoxShape.circle,
               gradient: new LinearGradient(
                   colors: [
-                    const Color.fromRGBO(52, 52, 52, 1),
-                    const Color.fromRGBO(52, 53, 52, 1),
+                    
+                    const Color.fromRGBO(57,181,74,1),
+                      const Color.fromRGBO(57,181,74,1),
                   ],
                   begin: const FractionalOffset(0.0, 0.0),
                   end: const FractionalOffset(0.9, 0.0),
@@ -326,7 +310,7 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                   tileMode: TileMode.clamp)),
           child: new MaterialButton(
             onPressed: () {
-              //  saveMoist();
+              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context)=>ShowtimeDateSelector(parkingspotkey: widget.parkingSpotKey,)));
             },
             child: new Padding(
               padding: const EdgeInsets.all(24.0),
@@ -341,3 +325,4 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
         ));
   }
 }
+

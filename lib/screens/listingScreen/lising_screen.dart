@@ -43,7 +43,7 @@ class _ListingProcessState extends State<ListingProcess> {
         ? enterGovtIdDetails(context)
         : !_steps[1]
             ? enterTheNameScreen()
-            : !_steps[2] ? enterAddressDetails() : !_steps[3]?locateme() :!_steps[4]?imageSelection():!_steps[5]?enterAccountDetails():!_steps[6]?idProofSelection()  : _termsAndConditions() ;
+            : !_steps[2] ? enterAddressDetails() : !_steps[3]?locateme() :!_steps[4]?imageSelection():!_steps[5]?idProofSelection():!_steps[6]?enterAccountDetails()  : _termsAndConditions() ;
   }
 
   Widget enterTheNameScreen() {
@@ -414,7 +414,7 @@ class _ListingProcessState extends State<ListingProcess> {
                             _creditCard != ''
                         ? () {
                             setState(() {
-                              _steps[5] = true;
+                              _steps[6] = true;
                             });
                           }
                         : null,
@@ -960,7 +960,7 @@ Widget idProofSelection() {
                         _idProof[2] != null
                     ? () {
                         setState(() {
-                          _steps[6] = true;
+                          _steps[5] = true;
                         });
                       }
                     : null,
@@ -1054,7 +1054,7 @@ Widget locateme(){
 _termsAndConditions()
 {
   List<Slide> slides= [
-    new Slide('ParkIT','Your parking spot will be display after verifying from out team','assets/icons/prkit_icon.png'),
+    new Slide('ParkIT','Your parking spot will be displayed after verifying it from our team','assets/icons/prkit_icon.png'),
   ];
   return SingleButtonIntro(slides, btnName=='Submit'?createParking:btnName=='Done'?()=>Navigator.of(context).pop(false):null, btnName, (){});
 }

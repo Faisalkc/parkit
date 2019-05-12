@@ -12,6 +12,7 @@ class IncompleteStepts extends StatefulWidget {
 }
 
 class _IncompleteSteptsState extends State<IncompleteStepts> {
+  GlobalKey<ScaffoldState> _scafoldkey;
   TextStyle _heading = TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
   TextStyle _subHeating = TextStyle();
   bool _emailCon=false;
@@ -23,9 +24,13 @@ class _IncompleteSteptsState extends State<IncompleteStepts> {
        widget.snapshot.data.email
       ),
       trailing: RaisedButton(onPressed: (){
-        FirebaseAuth.instance.currentUser().then((user)=>user.sendEmailVerification());
+        FirebaseAuth.instance.currentUser().then((user){user.sendEmailVerification();snackBarmsg('We have send one mail');});
       },child: Text('Send',style: TextStyle(color: Colors.white  ),),color: Colors.green,),
     ):Container();
+  }
+  void snackBarmsg(String _msg)
+  {
+    _scafoldkey.currentState.showSnackBar(SnackBar(content: Text(_msg),));
   }
     Widget mobileConfirmation()
   {
@@ -50,13 +55,15 @@ class _IncompleteSteptsState extends State<IncompleteStepts> {
   }
   @override
   void initState() {
-    
+    _scafoldkey=GlobalKey<ScaffoldState>();
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scafoldkey,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,6 +9,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:parkit/screens/auth/user_profile.dart';
 import 'package:parkit/screens/listingScreen/Listing.dart';
 import 'package:parkit/resources/repository.dart';
+import 'package:parkit/screens/settings/favorites.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(MyApp()));
@@ -26,6 +28,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => MyHomePage(),
           '/ListAPark':(context)=>Listing_page(),
           '/userProfile':(context)=>UserDetails(),
+          '/favorites':(context)=>Favorites(),
         },
         theme: ThemeData(fontFamily: 'Raleway', primarySwatch: Colors.grey),
        );
@@ -74,7 +77,11 @@ void initState() {
 void checkingforlocatiuon()async
 {
    _reposioty.getMarkers(center, context).then((val)=> setState(() {
-   markers=val;
+     markers= <MarkerId, Marker>{};
+  val.forEach((k,v)
+  {
+    markers[k]=v;
+  });
   }));
 
 }

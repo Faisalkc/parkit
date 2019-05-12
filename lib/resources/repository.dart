@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parkit/model/payment_model.dart';
 import 'package:parkit/resources/firebase_api_provider.dart';
 import 'package:parkit/model/parking_spot_model.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:parkit/model/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:parkit/screens/parkingspotDetails.dart';
+import 'package:parkit/model/available_model.dart';
 
 class Repository {
   final firebaseStorageApi = FirebaseStorageApi();
@@ -36,6 +38,12 @@ class Repository {
      {
         return await  firebaseDatabase.searchByParkingKey(parkingKey);
      }
+      
+     Future<Map<String,ParkingModel>> getMyParkingList()async
+     
+     {
+        return await  firebaseDatabase.getMyparkingSpots();
+     }
 
   Future<Map<MarkerId, Marker>> getMarkers(
       LatLng customerLocation, BuildContext context) async {
@@ -43,12 +51,13 @@ class Repository {
         await FirebaseDatabaseApi().getavailableParking(customerLocation);
     _listofParkings.forEach((key, values) {
       MarkerId markerId = MarkerId(key);
-      Marker marker = Marker(
+      Marker marker = Marker (
         markerId: markerId,
-        position: customerLocation,
+        icon: BitmapDescriptor.fromAsset('assets/images/mapicon.png'),
+        position: values.location.latLng,
         infoWindow: InfoWindow(
           title: values.spotname,
-          snippet: '*',
+          snippet: 'Ratings:'+values.votes.toString(),
         ),
         onTap: () {
           Navigator.push(
@@ -64,9 +73,12 @@ class Repository {
 
   Future<UserModel> getUserDetails() async {
     UserModel userModel;
-    FirebaseUser _user = await FirebaseAuth.instance.currentUser();
-    print(_user);
-    if(_user!=null)
+
+   
+    try {
+       FirebaseUser _user = await FirebaseAuth.instance.currentUser();
+      _user.reload();
+        if(_user!=null)
     {
       userModel = UserModel.fromFirebase(
         uid: _user.uid,
@@ -77,6 +89,12 @@ class Repository {
         displayName: _user.displayName);
     return userModel;
     }
+      print(_user);
+      
+    } catch (e) {
+    }
+  
+  
     return null;
   }
 
@@ -112,6 +130,35 @@ addBankPayment(String accountNumber,String bankName,holder)
 addCCPayment(String accountNumber,String bankName,holder)
 {
   firebaseDatabase.addPaymentMethod(accountNumber, bankName, holder, paymentMethods.CreditCard);
+}
+Future<bool>  makeAvailability(String _parkingid,AvailableModel _model)async
+{
+  await firebaseDatabase.addAvailability(_parkingid, _model);
+  return true;
+}
+Future<bool> addToFavorites(String _name) async
+{
+  final user=await FirebaseAuth.instance.currentUser();
+ return await firebaseDatabase.addToFavorites(_name,user.uid);
+}
+Future<bool> removeFromFavorites(String _name) async
+{
+  final user=await FirebaseAuth.instance.currentUser();
+ return await firebaseDatabase.removeFromFavorites(_name,user.uid);
+}
+Future<Map<String,ParkingModel>>  getMyFavorites() async
+{
+  
+return await firebaseDatabase.getFavorites();
+}
+Future<List<PaymentModel>> getMyPaymentMethods()
+{
+ return firebaseDatabase.getPaymentMethods();
+}
+bookaSlot(String parkingkey,String onDate,String slot)async
+{
+  final user=await  FirebaseAuth.instance.currentUser();
+ return firebaseDatabase.bookaSlot(parkingkey, onDate, slot, user.uid);
 }
 }
 final repository=Repository();
