@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:share/share.dart';
 class FreeRidesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _FreeRidesViewState extends State<FreeRidesView> {
                 height: 20,
               ),
               Text(
-                "Get a free ride worth up to \$20 when you refer a friend to try Uber.",
+                "Get a free parking worth up to \$20 when you refer a friend to try ParkiT.",
                 style: TextStyle(height: 1.4, fontSize: 20, color: Colors.grey),
               ),
               SizedBox(
@@ -102,7 +102,9 @@ class _FreeRidesViewState extends State<FreeRidesView> {
                 height: 14,
               ),
               GestureDetector(
-                onTap: (){},
+                onTap: (){
+                  Share.share('check out my website https://mvp-apps.com/123456');
+                },
                               child: Container(
                       width: double.infinity,
                       height: 60,

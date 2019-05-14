@@ -6,10 +6,10 @@ import 'lising_screen.dart';
 import 'package:parkit/Bloc/user_bloc.dart';
 class Listing_page extends StatefulWidget {
   @override
-  _Listing_pageState createState() => _Listing_pageState();
+  ListingPageState createState() => ListingPageState();
 }
 
-class _Listing_pageState extends State<Listing_page> {
+class ListingPageState extends State<Listing_page> {
   @override
   void initState() {
     super.initState();

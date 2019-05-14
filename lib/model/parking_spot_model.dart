@@ -16,6 +16,7 @@ class ParkingModel extends BaseModel
     AvailableModel availability;
     String customerName;
     String parkingkey;
+    bool isMyFav=false;
     ParkingModel.fromFirebase(dynamic snapshot)
     {
        this.location= LocationModel(LatLng(double.parse(snapshot['latitude'].toString()), double.parse(snapshot['longitude'].toString())), snapshot['address'], snapshot['city']);
@@ -32,7 +33,8 @@ class ParkingModel extends BaseModel
     try {
         if (snapshot['availability']!=null) 
       {
-        print(snapshot['availability']);
+       
+
         this.availability=AvailableModel.fromFirebase(snapshot['availability']);
       }
       

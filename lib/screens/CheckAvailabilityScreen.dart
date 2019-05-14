@@ -68,7 +68,7 @@ class _CheckAvailabilityState extends State<CheckAvailability> {
           TableCalendar(
             locale: 'en_US',
             events: listofEvents,
-            onDaySelected: (date, List) {
+            onDaySelected: (date, List a) {
               setState(() {
                 _selectedDate = date.year.toString() +
                     '-' +

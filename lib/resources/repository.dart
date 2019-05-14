@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parkit/Bloc/favorites_bloc.dart';
+import 'package:parkit/model/history_model.dart';
 import 'package:parkit/model/payment_model.dart';
 import 'package:parkit/resources/firebase_api_provider.dart';
 import 'package:parkit/model/parking_spot_model.dart';
@@ -11,6 +13,9 @@ import 'package:parkit/model/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:parkit/screens/parkingspotDetails.dart';
 import 'package:parkit/model/available_model.dart';
+import 'package:parkit/model/favorites.dart';
+import 'favoritesDB.dart';
+import 'HistoryDB.dart';
 
 class Repository {
   final firebaseStorageApi = FirebaseStorageApi();
@@ -25,7 +30,12 @@ class Repository {
     }
     return _uploadedList;
   }
+Future<Transaction> getMyTxnHistory()async
+{
+  return Transaction.fromjson(await historyDB.getMyHistory());
+ 
 
+}
   createParkingSpot(ParkingModel parking,List<File> _docUpload)async
   {
     parking.image=await firebaseStorageApi.uploadPlotDoc(parking.imageToupload);
@@ -50,7 +60,9 @@ class Repository {
     Map<String, ParkingModel> _listofParkings =
         await FirebaseDatabaseApi().getavailableParking(customerLocation);
     _listofParkings.forEach((key, values) {
-      MarkerId markerId = MarkerId(key);
+  
+    if(values.availability.availableTiming.length>0){
+        MarkerId markerId = MarkerId(key);
       Marker marker = Marker (
         markerId: markerId,
         icon: BitmapDescriptor.fromAsset('assets/images/mapicon.png'),
@@ -67,6 +79,8 @@ class Repository {
         },
       );
       markers[markerId] = marker;
+    
+    }
     });
     return markers;
   }
@@ -136,20 +150,35 @@ Future<bool>  makeAvailability(String _parkingid,AvailableModel _model)async
   await firebaseDatabase.addAvailability(_parkingid, _model);
   return true;
 }
-Future<bool> addToFavorites(String _name) async
+Future<bool> addToFavorites(ParkingModel data) async
 {
-  final user=await FirebaseAuth.instance.currentUser();
- return await firebaseDatabase.addToFavorites(_name,user.uid);
+  favoritesDb.addToFav(data);
+  ismyfavbloc.ismyfavbloc(data.parkingkey);
+  return true;
 }
-Future<bool> removeFromFavorites(String _name) async
+Future<bool> removeFromFavorites(String parkingkey) async
 {
-  final user=await FirebaseAuth.instance.currentUser();
- return await firebaseDatabase.removeFromFavorites(_name,user.uid);
+  ismyfavbloc.ismyfavbloc(parkingkey);
+  return await favoritesDb.removeFromFav(parkingkey);
 }
-Future<Map<String,ParkingModel>>  getMyFavorites() async
+Future<FavoritesModel> checkfav(String _name) async
 {
+   bool fav=await favoritesDb.alreadyExist(_name);
+ return FavoritesModel(parkingKey: _name,isMyfav: fav);
+}
+Future<FavoritesModel>  getMyFavorites() async
+{
+FavoritesModel.favlistavailable.clear();
+ List<Map<String, dynamic>> _data=  await favoritesDb.getMyFav();
+for (var row in _data) {
+  print(row);
+
+FavoritesModel obj = FavoritesModel.favlist(id: row['id'],spotname: row['name'],parkingKey: row['parkit'],desc: row['desc'],image: row['img']);
+FavoritesModel.favlistavailable.add(obj);
+
   
-return await firebaseDatabase.getFavorites();
+}
+  return FavoritesModel.favlistavailable.isEmpty?null:FavoritesModel.favlistavailable[0];
 }
 Future<List<PaymentModel>> getMyPaymentMethods()
 {

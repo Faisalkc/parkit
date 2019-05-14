@@ -8,6 +8,7 @@ import 'package:parkit/screens/auth/diagonal_clipper.dart';
 import 'package:parkit/screens/settings/availability.dart';
 import 'package:parkit/screens/settings/free_rides.dart';
 import 'package:parkit/screens/settings/history.dart';
+import 'package:parkit/screens/settings/history/history.dart';
 import 'package:parkit/screens/settings/incompleteScreens.dart';
 import 'package:parkit/screens/settings/payment/payment.dart';
 import 'package:parkit/screens/settings/settings.dart';
@@ -216,7 +217,7 @@ class _UserDetailsState extends State<UserDetails> {
             onTap: (){
               Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) =>
-            History()));
+            EarningsPage()));
             },
             trailing: Icon(Icons.attach_money),
             title: Text('Balance'),
@@ -228,7 +229,7 @@ class _UserDetailsState extends State<UserDetails> {
         builder: (BuildContext context) =>
             PaymentPage()));
             },
-            trailing: Icon(Icons.attach_money),
+            trailing: Icon(Icons.credit_card),
             title: Text('Payment Methods'),
           ),
           Divider(),
@@ -238,13 +239,13 @@ class _UserDetailsState extends State<UserDetails> {
         builder: (BuildContext context) =>
             History()));
             },
-            trailing: Icon(Icons.attach_file),
+            trailing: Icon(Icons.list ),
             title: Text('History'),
           ),
           Divider(),
           ListTile(
             onTap: ()=>Navigator.pushNamed(context, '/favorites'),
-            trailing: Icon(Icons.notifications),
+            trailing: Icon(Icons.favorite_border),
             title: Text('Favorites'),
           ),
           Divider(),
@@ -275,7 +276,7 @@ class _UserDetailsState extends State<UserDetails> {
         builder: (BuildContext context) =>
             FreeRidesPage()));
             },
-            trailing: Icon(Icons.attach_money),
+            trailing: Icon(Icons.people_outline),
             title: Text('Invite Friend'),
             
           ),
@@ -286,7 +287,7 @@ class _UserDetailsState extends State<UserDetails> {
         builder: (BuildContext context) =>
             FreeRidesPage()));
             },
-            trailing: Icon(Icons.attach_file),
+            trailing: Icon(Icons.local_parking  ),
             title: Text('Invite Host'),
           ),
           
@@ -327,7 +328,7 @@ class _UserDetailsState extends State<UserDetails> {
             onTap: () {
               _goToProfilePage(snapshot, context);
             },
-            trailing: Icon(Icons.add_box),
+            trailing: Icon(Icons.help_outline),
             title: Text('Get help'),
           ),
           Divider(),
@@ -335,7 +336,7 @@ class _UserDetailsState extends State<UserDetails> {
             onTap: () {
               _goToProfilePage(snapshot, context);
             },
-            trailing: Icon(Icons.add_box),
+            trailing: Icon(Icons.feedback),
             title: Text('Giv us feedback'),
           ),
           Divider(),

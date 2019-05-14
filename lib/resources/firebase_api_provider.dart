@@ -8,6 +8,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkit/model/payment_model.dart';
 import 'package:parkit/model/user_model.dart';
 
+import 'favoritesDB.dart';
+
 
 class FirebaseApiProvider {
   final notesReference = FirebaseDatabase.instance.reference().child("parkit");
@@ -283,6 +285,8 @@ return _availablePayments;
       _model.parkingkey=key.toString();
       UserModel _cus = await searchCustomerDetails(_model.userid);
       _model.customerName = _cus.displayName;
+      
+     _model.isMyFav=await favoritesDb.alreadyExist(key.toString());
     });
     return _model;
   }

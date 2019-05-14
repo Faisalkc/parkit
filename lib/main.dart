@@ -6,12 +6,19 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkit/Widget/customBottomNavigation.dart';
 import 'package:location/location.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:parkit/resources/HistoryDB.dart';
 import 'package:parkit/screens/auth/user_profile.dart';
 import 'package:parkit/screens/listingScreen/Listing.dart';
 import 'package:parkit/resources/repository.dart';
 import 'package:parkit/screens/settings/favorites.dart';
+import 'resources/favoritesDB.dart';
+import 'screens/settings/history/earnings_details.dart';
+import 'screens/settings/history/promotions.dart';
+import 'screens/settings/history/recent_transactions.dart';
 
 void main() {
+  favoritesDb;
+  historyDB;
   initializeDateFormatting().then((_) => runApp(MyApp()));
 }
 
@@ -29,6 +36,10 @@ class MyApp extends StatelessWidget {
           '/ListAPark':(context)=>Listing_page(),
           '/userProfile':(context)=>UserDetails(),
           '/favorites':(context)=>Favorites(),
+          '/earnings_details':(context)=>EarningsDetailsPage(),
+          '/recent_transations':(context)=>RecentTransactionsPage(),
+          '/promotions':(context)=>PromotionsPage(),
+
         },
         theme: ThemeData(fontFamily: 'Raleway', primarySwatch: Colors.grey),
        );
@@ -76,6 +87,7 @@ void initState() {
  }
 void checkingforlocatiuon()async
 {
+  
    _reposioty.getMarkers(center, context).then((val)=> setState(() {
      markers= <MarkerId, Marker>{};
   val.forEach((k,v)
@@ -134,8 +146,10 @@ void checkingforlocatiuon()async
                   Container(
                       height: MediaQuery.of(context).size.height,
                       child: GoogleMap(
-
+                      
                         onMapCreated: _onMapCreated,
+                       
+                        myLocationButtonEnabled: false,
                         initialCameraPosition:  CameraPosition(
                           target: center,
                           zoom: 11.0,

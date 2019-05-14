@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:parkit/model/parking_spot_model.dart';
-import 'package:parkit/resources/repository.dart';
+import 'package:parkit/Bloc/myfavlist_bloc.dart';
+import 'package:parkit/model/favorites.dart';
+import 'package:parkit/screens/parkingspotDetails.dart';
 
 class Favorites extends StatefulWidget {
   @override
@@ -9,42 +10,51 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites> {
   @override
+  void initState() {
+     myfavlistbloc.myfavlistbloc(); 
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:favlist(),
+      body: favlist(),
     );
   }
 
-    Widget favlist() {
-    return FutureBuilder(
-
-      future: repository.getMyFavorites(),
-      builder: (BuildContext context,
-          AsyncSnapshot<Map<String, ParkingModel>> snapshot) {
+  Widget favlist() {
+   
+    return StreamBuilder(
+      stream: myfavlistbloc.fetcher,
+      builder: (BuildContext context, AsyncSnapshot<FavoritesModel> snapshot) {
         if (snapshot.hasData) {
-          print('length:'+snapshot.data.keys.toString());  
-          Map<String, ParkingModel> mylist = snapshot.data;
-          return Container(
-            child: ListView.builder(
-              itemCount: mylist.length,
-              itemBuilder: (BuildContext context, int index) {
-                return buildApartmentList(context,snapshot,index);
-              },
-            ),
-          );
+          if (FavoritesModel.favlistavailable.length > 0) {
+            return Container(
+              child: ListView.builder(
+                itemCount: FavoritesModel.favlistavailable.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return buildApartmentList(context, index);
+                },
+              ),
+            );
+          }
         } else if (snapshot.hasError) {
-          return Text('No record found');
+          return Container(
+              padding: EdgeInsets.all(20.0),
+              child: Center(child: Text(snapshot.error)));
         }
-        else
+
         return Container(
             padding: EdgeInsets.all(20.0),
-            child: Center(child: CircularProgressIndicator()));
+            child: Center(child: Hero(
+              tag: 'spotimage',
+              child: CircularProgressIndicator(),
+            )));
       },
     );
   }
 
-  Row buildApartmentList(BuildContext context,
-     AsyncSnapshot<Map<String, ParkingModel>> snapshot, int index) {
+  Row buildApartmentList(BuildContext context, int index) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -72,19 +82,19 @@ class _FavoritesState extends State<Favorites> {
             children: <Widget>[
               Container(
                 child: Text(
-                 snapshot.data.values.toList()[index].spotname,
+                  FavoritesModel.favlistavailable[index].spotname,
                   style: TextStyle(fontSize: 36, fontWeight: FontWeight.w500),
                 ),
               ),
-              Container(
-                child: Text(
-                  '10 days ago 8-9 Nov',
-                  style: TextStyle(
-                      fontSize: 17,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
+              // Container(
+              //   child: Text(
+              //     '10 days ago 8-9 Nov',
+              //     style: TextStyle(
+              //         fontSize: 17,
+              //         color: Colors.grey,
+              //         fontWeight: FontWeight.w600),
+              //   ),
+              // ),
               SizedBox(
                 height: 18,
               ),
@@ -99,12 +109,18 @@ class _FavoritesState extends State<Favorites> {
                         child: Column(
                           children: <Widget>[
                             Container(
-                              child: Image(
-                                height: 250,
-                                width: double.infinity,
-                                image: NetworkImage(
-                                    snapshot.data.values.toList()[index].image[0]),
-                                fit: BoxFit.cover,
+                              child: Hero(
+                                child: GestureDetector(
+                                  child: Image(
+                                    height: 250,
+                                    width: double.infinity,
+                                    image: NetworkImage(FavoritesModel
+                                        .favlistavailable[index].image),
+                                    fit: BoxFit.cover,
+                                  ),
+                                onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=>ParkingSpotDetails(parkingSpotKey: FavoritesModel.favlistavailable[index].parkingKey,))),
+                                ),
+                                tag: 'spotimage',
                               ),
                             ),
                             SizedBox(
@@ -112,9 +128,9 @@ class _FavoritesState extends State<Favorites> {
                             ),
                             Container(
                               alignment: Alignment.topLeft,
-                              padding: EdgeInsets.only(left: 6),
+                              padding: EdgeInsets.only(left: 10, bottom: 6),
                               child: Text(
-                                'Perfectly located apartment in city\ncenter',
+                                FavoritesModel.favlistavailable[index].desc,
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
@@ -128,12 +144,12 @@ class _FavoritesState extends State<Favorites> {
                                     spacing: 4,
                                     children: <Widget>[
                                       Text(
-                                        'Book Again',
+                                        'Book Now',
                                         style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w400),
                                       ),
-                                      Icon(Icons.replay)
+                                      Icon(Icons.arrow_forward_ios)
                                     ],
                                   ),
                                 ),
