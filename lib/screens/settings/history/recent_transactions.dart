@@ -5,6 +5,7 @@ import 'package:parkit/model/history_model.dart';
 class RecentTransactionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+   
     return RecentTransactionsView();
   }
 }
@@ -76,7 +77,9 @@ class _RecentTransactionsViewState extends State<RecentTransactionsView> {
                       height: 40,
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                     
+                      },
                       child: Container(
                           width: double.infinity,
                           height: 60,
@@ -208,4 +211,5 @@ builder: (BuildContext context,AsyncSnapshot<Transaction> snapshot)
               ),
             ) ;
   }
+
 }

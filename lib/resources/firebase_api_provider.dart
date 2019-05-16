@@ -144,7 +144,16 @@ class FirebaseDatabaseApi extends FirebaseApiProvider {
     });
     return _parkingList;
   }
-
+Future<void> updateFCM(String tocken)async
+{
+  try {
+    
+  FirebaseUser user=await FirebaseAuth.instance.currentUser();
+  userReference.child('${user.uid}').child('fcm').set(tocken);
+  } catch (e) {
+    userReference.child('guests').child('fcm').set(tocken);
+  }
+}
   Future<UserModel> searchCustomerDetails(String _uid) async {
     UserModel user = UserModel.fromSearching();
     await userReference

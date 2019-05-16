@@ -12,14 +12,17 @@ import 'package:parkit/screens/listingScreen/Listing.dart';
 import 'package:parkit/resources/repository.dart';
 import 'package:parkit/screens/settings/favorites.dart';
 import 'resources/favoritesDB.dart';
+import 'resources/firebase_pushnotification.dart';
 import 'screens/settings/history/earnings_details.dart';
 import 'screens/settings/history/promotions.dart';
 import 'screens/settings/history/recent_transactions.dart';
 
 void main() {
+  
+  initializeDateFormatting().then((_) => runApp(MyApp()));
+  firebasePushNotification;
   favoritesDb;
   historyDB;
-  initializeDateFormatting().then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -63,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
+    _goToTheLake();
   }
 
 @override
@@ -71,18 +75,19 @@ void initState() {
       setState(() {
        center=onValue; 
         checkingforlocatiuon();
+        
       });
      });
     super.initState();
   }
   @override
   void dispose() {
-
     super.dispose();
 
   }
 
  Future<void> _goToTheLake() async {
+   
    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: center,zoom: 15)));
  }
 void checkingforlocatiuon()async
@@ -179,6 +184,7 @@ void checkingforlocatiuon()async
                   ),
                 ],
               ));
+             
   }
 
 

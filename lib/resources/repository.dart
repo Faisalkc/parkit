@@ -189,5 +189,9 @@ bookaSlot(String parkingkey,String onDate,String slot)async
   final user=await  FirebaseAuth.instance.currentUser();
  return firebaseDatabase.bookaSlot(parkingkey, onDate, slot, user.uid);
 }
+updateFCM(String tocken)async
+{
+  firebaseDatabase.updateFCM(tocken);
+}
 }
 final repository=Repository();
