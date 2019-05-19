@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-  BottomNavigationBar bottomAppBar(BuildContext context,int index) {
+  BottomNavigationBar bottomAppBar(BuildContext context,int cureindex) {
     return BottomNavigationBar(
-      currentIndex: index,
+      currentIndex: cureindex,
       type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.map), title: Text('')),
@@ -12,7 +12,10 @@ import 'package:flutter/material.dart';
       onTap: (index) {
         switch (index) {
           case 0:
-          Navigator.of(context).pushNamed('/');
+          if(cureindex!=index)
+          {
+            Navigator.of(context).pushNamed('/'); 
+          }
             break;
           case 1:
            Navigator.of(context).pushNamed('/favorites');

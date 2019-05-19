@@ -1,13 +1,14 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:parkit/resources/firebase_pushnotification.dart';
 class Settings extends StatefulWidget {
   @override
   _SettingsState createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   @override
   void initState() {
     _riminderNotifi=true;
@@ -19,7 +20,15 @@ void updateSettings()async
 {
   SharedPreferences mypref=await SharedPreferences.getInstance();
   setState(() {
-    _promoNotifi=mypref.getBool('promotions')??true;
+    if (mypref.getBool('promotions')!=null) {
+       _promoNotifi=mypref.getBool('promotions');
+    }
+    else{
+
+      _promoNotifi=true;
+      promotionNotifications();
+    }
+    
   });
 }
   bool _riminderNotifi;
@@ -73,7 +82,7 @@ void updateSettings()async
           setState(() {
             _promoNotifi=val;
             SharedPreferences.getInstance().then((mypref){mypref.setBool('promotions', val);
-            firebasePushNotification.promotionNotifications();
+            promotionNotifications();
             });
             
 
@@ -84,4 +93,12 @@ void updateSettings()async
       ],
     );
   }
+   void promotionNotifications()async
+ {
+  SharedPreferences myPref=await SharedPreferences.getInstance();
+  bool pormo= myPref.getBool('promotions')??true;
+  {
+    pormo?_firebaseMessaging.subscribeToTopic('promotions'):_firebaseMessaging.unsubscribeFromTopic('promotions');
+  }
+ } 
 }

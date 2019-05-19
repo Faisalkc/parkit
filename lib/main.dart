@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,7 +13,6 @@ import 'package:parkit/screens/listingScreen/Listing.dart';
 import 'package:parkit/resources/repository.dart';
 import 'package:parkit/screens/settings/favorites.dart';
 import 'resources/favoritesDB.dart';
-import 'resources/firebase_pushnotification.dart';
 import 'screens/settings/history/earnings_details.dart';
 import 'screens/settings/history/promotions.dart';
 import 'screens/settings/history/recent_transactions.dart';
@@ -20,7 +20,6 @@ import 'screens/settings/history/recent_transactions.dart';
 void main() {
   
   initializeDateFormatting().then((_) => runApp(MyApp()));
-  firebasePushNotification;
   favoritesDb;
   historyDB;
 }
@@ -57,6 +56,7 @@ class MyHomePage extends StatefulWidget {
 typedef Marker MarkerUpdateAction(Marker marker);
 
 class _MyHomePageState extends State<MyHomePage> {
+   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   static LatLng center = const LatLng(-33.86711, 151.1947171);
 
   GoogleMapController controller;
@@ -79,6 +79,32 @@ void initState() {
       });
      });
     super.initState();
+      _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+        _showItemDialog(message);
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+        
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+        
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+    _firebaseMessaging.getToken().then((String token) {
+      assert(token != null);
+      repository.updateFCM(token);
+       print(token);
+     
+    });
   }
   @override
   void dispose() {
@@ -189,4 +215,44 @@ void checkingforlocatiuon()async
 
 
 
+  void _showItemDialog(Map<String, dynamic> message) {
+    showDialog<bool>(
+      context: context,
+      builder: (_) => _buildDialog(context,message),
+    ).then((bool shouldNavigate) {
+      if (shouldNavigate == true) {
+        _navigateToItemDetail(message);
+      }
+    });
+  }
+  Widget _buildDialog(BuildContext context,Map<String, dynamic> msg) {
+    return AlertDialog(
+      content: Wrap(
+        
+        children: <Widget>[
+          Row(children: <Widget>[Text(msg['notification']['title']),],),
+          Text(msg['notification']['body'],style: TextStyle(fontSize: 13),)
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: const Text('CLOSE'),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+        ),
+        FlatButton(
+          child: const Text('SHOW'),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
+      ],
+    );
+  }
+  void _navigateToItemDetail(Map<String, dynamic> message) {
+    // Clear away dialogs
+    Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
+    
+  }
 }

@@ -9,14 +9,7 @@ class FirebasePushNotification
  {
   config();
  }
- void promotionNotifications()async
- {
-  SharedPreferences myPref=await SharedPreferences.getInstance();
-  bool pormo= myPref.getBool('promotions')??true;
-  {
-    pormo?_firebaseMessaging.subscribeToTopic('promotions'):_firebaseMessaging.unsubscribeFromTopic('promotions');
-  }
- } 
+
  void config()
  {
     try {
@@ -50,7 +43,6 @@ class FirebasePushNotification
 
     _firebaseMessaging.getToken().then((token){
       repository.updateFCM(token);
-    promotionNotifications();
       print(token);
     }); 
    } catch (e) {
