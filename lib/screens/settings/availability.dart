@@ -3,6 +3,7 @@ import 'package:parkit/model/available_model.dart';
 import 'package:parkit/model/parking_spot_model.dart';
 import 'package:parkit/model/spot_date_model.dart';
 import 'package:parkit/resources/repository.dart';
+import 'package:flutter/cupertino.dart';
 
 class AddAvailability extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class AddAvailability extends StatefulWidget {
 }
 
 class _AddAvailabilityState extends State<AddAvailability> {
+  double parkingfee;
   bool isloading=false;
   DateTime _selectedDate;
   String _selectedParkingSpot;
@@ -20,8 +22,9 @@ class _AddAvailabilityState extends State<AddAvailability> {
   GlobalKey<ScaffoldState> _scafoldkey=GlobalKey<ScaffoldState>();
   @override
   void initState() {
-   _selectedFromTime = TimeOfDay(hour: 0, minute: 01);
-    _selectedToTimie = TimeOfDay(hour: 23, minute: 59);
+    parkingfee=1;
+   _selectedFromTime = TimeOfDay(hour: 0, minute: 00);
+    _selectedToTimie = TimeOfDay(hour: 23, minute: 00);
     _selectedDate = DateTime.now();
     super.initState();
   }
@@ -69,7 +72,10 @@ minimunPadding(),
                   Align(child:   Text("Select Date".toUpperCase(),style: _subHeaderText,),alignment: Alignment.topLeft,),
                   Row(
                     children: <Widget>[
-                      InkResponse(child: Text('${_selectedDate.year}/${_selectedDate.month}/${_selectedDate.day}'),onTap: (){ _selectDate(context);}),
+                      Padding(
+                        child: InkResponse(child: Text('${_selectedDate.year}/${_selectedDate.month}/${_selectedDate.day}',),onTap: (){ _selectDate(context);}),
+                        padding: EdgeInsets.only(left: 20,top: 10),
+                      )
                     ],
                   ),
                   minimunPadding(),
@@ -77,22 +83,56 @@ minimunPadding(),
                    Align(child:   Text("Select Time".toUpperCase(),style: _subHeaderText,),alignment: Alignment.topLeft,),
                    Row(
                     children: <Widget>[
-                      InkResponse(
+                      Padding(
+                        child: InkResponse(
                         child: Text('From : ${_selectedFromTime.hour}:${_selectedFromTime.minute}'),
                         onTap: ()=>_selectFromTime(context),
+                      ),
+                      padding: EdgeInsets.only(left: 20,top: 10),
                       )
                     ],
                   ),
                   Row(
                     children: <Widget>[
-                      InkResponse(
+                      Padding(
+                        child: InkResponse(
                         child: Text('To : ${_selectedToTimie.hour}:${_selectedToTimie.minute}'),
                         onTap: ()=>_selectToTime(context),
+                      ),
+                      padding: EdgeInsets.only(left: 20,top: 
+                      10),
                       )
                     ],
                   ),
                    minimunPadding(),
                    Divider(),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children: <Widget>[
+                       Column(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                         children: <Widget>[
+                          
+                           Text('\$ $parkingfee',style: TextStyle(color: Colors.blue,fontSize: 25),),
+                       Slider(
+                         
+                     activeColor: Colors.blue,
+                     min: 1,
+                  divisions: 24,
+                     max: 25,
+                     value: parkingfee,
+                     onChanged: (val)
+                     {
+                        setState(() {
+                          parkingfee=val;
+                        });
+                     },
+                   ),
+                   
+                         ],
+                       )
+                     ],
+                   ),
 
 
                 
@@ -106,37 +146,89 @@ Widget minimunPadding()
 {
   return SizedBox(height: 10,);
 }
-  Future _selectDate(context) async {
-    DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime(
-            DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
-        firstDate: DateTime.now(),
-        lastDate: new DateTime(DateTime.now().year + 1));
-    if (picked != null) setState(() => _selectedDate = picked);
+  Future _selectDate(context)  async{
+  return   showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext builder) {
+                        return Container(
+                            height:
+                                MediaQuery.of(context).copyWith().size.height /
+                                    3,
+                            child: CupertinoDatePicker(
+                              initialDateTime: DateTime.now(),
+                              minimumDate: DateTime.now(),
+                              minimumYear: DateTime.now().year,
+                              onDateTimeChanged: (DateTime newdate) {
+                               setState(() {
+                                 _selectedDate=newdate;
+                               });
+                              },
+                              minuteInterval: 1,
+                              mode: CupertinoDatePickerMode.date,
+                            ));
+                      });
+      
+
   }
 
   Future _selectFromTime(context) async {
-    TimeOfDay picked =
-        await showTimePicker(context: context, initialTime: _selectedFromTime);
-    if (picked != null) setState(() => _selectedFromTime = picked);
+       return showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext builder) {
+                        return Container(
+                            height:
+                                MediaQuery.of(context).copyWith().size.height /
+                                    3,
+                            child: CupertinoDatePicker(
+                              minuteInterval: 60,
+                              initialDateTime: DateTime(DateTime.now().year),
+                              onDateTimeChanged: (DateTime newdate) {
+                               setState(() {
+                                 _selectedFromTime=TimeOfDay(hour: newdate.hour,minute: newdate.minute);
+                               });
+                              },
+                             
+                              mode: CupertinoDatePickerMode.time,
+                              use24hFormat: true,
+                              
+                            ));
+                      });
   }
 
   Future _selectToTime(context) async {
-    TimeOfDay picked =
-        await showTimePicker(context: context, initialTime: _selectedToTimie);
-    if (picked != null) setState(() => _selectedToTimie = picked);
+    return showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext builder) {
+                        return Container(
+                            height:
+                                MediaQuery.of(context).copyWith().size.height /
+                                    3,
+                            child: CupertinoDatePicker(
+                              minuteInterval: 60,
+                              initialDateTime: DateTime(DateTime.now().year),
+                              onDateTimeChanged: (DateTime newdate) {
+                               setState(() {
+                                 _selectedToTimie=TimeOfDay(hour: newdate.hour,minute: newdate.minute);
+                               });
+                              },
+                             
+                              mode: CupertinoDatePickerMode.time,
+                              use24hFormat: true,
+                              
+                            ));
+                      });
   }
   Widget available()
   {
     return  FutureBuilder(
+      
         future: repository.getMyParkingList(),
         builder: (BuildContext context,
             AsyncSnapshot<Map<String, ParkingModel>> snapshot) {
           if (snapshot.hasData) {
             Map<String, ParkingModel> mylist = snapshot.data;
             return  Container(
-              height: 90,
+              height: 50*snapshot.data.length.toDouble(),
               child: ListView.builder(
            
               itemCount: mylist.length,
@@ -177,9 +269,9 @@ Widget minimunPadding()
     setState(() {
       isloading=true;
     });
-    repository.makeAvailability(_selectedParkingSpot, AvailableModel.forFirebase(SpotDate('${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}', _selectedFromTime.hour, _selectedFromTime.minute, _selectedToTimie.hour, _selectedToTimie.minute))).then((onValue){setState(() {
+    repository.makeAvailability(_selectedParkingSpot, AvailableModel.forFirebase(SpotDate('${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}', _selectedFromTime.hour, _selectedToTimie.hour,))).then((onValue){setState(() {
       isloading=false;
-      _scafoldkey.currentState.showSnackBar(SnackBar(content: Text('Your Parking has been Placed'),));
+      onValue? _scafoldkey.currentState.showSnackBar(SnackBar(content: Text('Your Parking has been Placed'))):_scafoldkey.currentState.showSnackBar(SnackBar(content: Text('Something went wrong'),));
     });});
   }
 }

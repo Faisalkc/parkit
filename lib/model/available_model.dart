@@ -3,6 +3,8 @@ import 'spot_date_model.dart';
 import 'package:flutter/material.dart';
 
 class AvailableModel extends BaseModel {
+  double parkingfee ;
+
   bool suspended;
   SpotDate soptDates;
   Map<DateTime, List<SpotDate>> availableTiming = {};
@@ -15,18 +17,30 @@ class AvailableModel extends BaseModel {
     Map<dynamic, dynamic> _dates = snapshot;
     _dates.forEach((k, v) {
       if (extractDate(k).isAfter(
-              DateTime(datenow.year, datenow.month, datenow.day )) 
+              DateTime(datenow.year, datenow.month, datenow.day-1 )) 
           ) {
+            print(v);
         List<SpotDate> _temp = [];
+     
         Map<dynamic, dynamic> _available = v;
         _available.forEach((timing, avail) {
+
           try {
+          
             if (avail == true) {
               final time = extractTime(timing.toString());
-              SpotDate _s = SpotDate.fromFirebase(time.hour, time.minute);
+              SpotDate _s = SpotDate.fromFirebase(time.hour,);
               _temp.add(_s);
             }
-          } catch (e) {}
+            else if(timing.toString()=='25:00')
+            {print('found price' +avail.toString());
+              parkingfee=double.parse(avail.toString());
+              print(parkingfee);
+            }
+            
+          } catch (e) {
+            print(e);
+          }
         });
         availableTiming[extractDate(k)] = _temp;
       }
@@ -44,8 +58,8 @@ class AvailableModel extends BaseModel {
   }
 
   TimeOfDay extractTime(String date) {
-    final splitedDate = date.split(':');
+    final data=date.split(':');
     return TimeOfDay(
-        hour: int.parse(splitedDate[0]), minute: int.parse(splitedDate[1]));
+        hour: int.parse(data[0]), minute : 00);
   }
 }

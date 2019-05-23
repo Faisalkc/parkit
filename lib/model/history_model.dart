@@ -126,12 +126,14 @@ class History{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getDouble('mainbalance') ?? 0;
   }
+  
 
   setCurrentBalance(double amount) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setDouble('mainbalance', amount);
   }
 }
+final history=History();
 class Transaction extends BaseModel
 {
   List<History> transactions=[];

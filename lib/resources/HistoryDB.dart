@@ -40,7 +40,6 @@ class HistoryDB {
   }
 
   updateHistory() {}
-  checkMyBalance() {}
 }
 
 final historyDB = HistoryDB();

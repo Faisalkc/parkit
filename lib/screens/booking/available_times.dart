@@ -1,6 +1,8 @@
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:parkit/Bloc/location_bloc.dart';
 import 'package:parkit/model/available_model.dart';
+import 'package:parkit/model/booking_model.dart';
 import 'package:parkit/model/parking_spot_model.dart';
 import 'package:parkit/model/spot_date_model.dart';
 import 'package:parkit/resources/repository.dart';
@@ -32,29 +34,39 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scafold,
-      bottomNavigationBar: BottomAppBar(
-        
-          color: Colors.green,
-          child: GestureDetector(
-            child: Container(
-              child: Center(
-                child: _selectedDates.isNotEmpty
-                    ? Text(
-                        'Book  your ${_selectedDates.length} slot now'
-                            .toString(),
-                        style: TextStyle(color: Colors.white),
-                      )
-                    : Text(
-                        'Select a slot',
-                        style: TextStyle(color: Colors.white30),
-                      ),
-              ),
-              height: MediaQuery.of(context).size.height * .08,
-            ),
-            onTap: _selectedDates.isNotEmpty?() =>
-              _showDialogformultiplebooking(widget.parkingspotkey):null
+      bottomNavigationBar: 
+      
+      
+      new Container(
+          
+          decoration: new BoxDecoration(
+           
+              //   shape: BoxShape.circle,
+              gradient: new LinearGradient(
+                  colors: [
+                    const Color.fromRGBO(57, 181, 74, 1),
+                    const Color.fromRGBO(57, 181, 74, 1),
+                  ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(0.9, 0.0),
+                  stops: [0.0, 0.9],
+                  tileMode: TileMode.clamp)),
+          child: new MaterialButton(
+            onPressed: _selectedDates.isNotEmpty?() =>
+              _showDialog(widget.parkingspotkey,getbookingDate(),getlistOfslots()):null
             ,
-          )),
+            child: new Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: new Text('Book Your Slots '+_selectedDates.length.toString(),
+                  style: new TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.w600)),
+            ),
+          ),
+        )
+,
       body: StreamBuilder(
         stream: parkitlocationbloc.fetcher,
         builder: (BuildContext context, AsyncSnapshot<ParkingModel> snapshot) {
@@ -66,23 +78,34 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
                 .sort((a, b) {
               return a.compareTo(b);
             });
-            return SafeArea(
+            return  SafeArea(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  availableListOnDate(snapshot.data.availability, size),
+               Padding(
+                 padding: EdgeInsets.only(left: 10,top: 10,bottom: 10),
+                 child:  Text('Select your Timing',style: TextStyle(fontSize: 17),),
+               ),
+                 availableListOnDate(snapshot.data.availability, size),
+                 
                   _selectedDate == null
-                      ? Center(
+                      ? Align(child: Center(
                           child: Text('select a date'),
-                        )
+                        ),
+                        heightFactor: 20,
+                        alignment: Alignment.center,)
                       : availableTiming(snapshot.data.availability, size,
                           _selectedDate, snapshot.data.parkingkey)
                 ],
               ),
-            );
+            )
+            ;
           } else if (snapshot.hasError) {
             return Text('Something went wrong');
           } else
             return Container(
+              color: Colors.white,
                 padding: EdgeInsets.all(20.0),
                 child: Center(child: CircularProgressIndicator()));
         },
@@ -93,7 +116,7 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
   Widget availableListOnDate(AvailableModel _available, Size _size) {
     return Container(
       width: _size.width,
-      height: _size.height * .10,
+      height: _size.height * .12,
       color: Colors.transparent,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -126,9 +149,9 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
             width: 1,
           )),
           color: _selectedDate == DateTime(date.year, date.month, date.day)
-              ? Colors.black
-              : Colors.yellow),
-      width: _size.height * .10,
+              ? Colors.green
+              : Colors.white),
+      width: _size.width*.25  ,
       height: _size.height * .08,
       child: InkResponse(
         onTap: () {
@@ -144,7 +167,7 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
               date.day.toString(),
               style: _selectedDate == DateTime(date.year, date.month, date.day)
                   ? TextStyle(
-                      color: Colors.yellow,
+                      color: Colors.white,
                       fontSize: 30,
                       fontWeight: FontWeight.normal,
                       letterSpacing: 3)
@@ -158,7 +181,7 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
               '${date.month} / ${date.year}',
               style: _selectedDate == DateTime(date.year, date.month, date.day)
                   ? TextStyle(
-                      color: Colors.yellow,
+                      color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.normal,
                       letterSpacing: 3)
@@ -173,18 +196,29 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
       ),
     );
   }
-
+Widget priceDisplay(String price)
+{
+  return Container(
+    color: Colors.green,
+    width: double.infinity,
+    child: ListTile(title: Text('Price/Hour : \$ ${price}',style: TextStyle(color: Colors.white),),)
+  );
+}
   Widget availableTiming(AvailableModel _available, Size _size,
       DateTime _selectedDate, String parkingkey) {
     (_available.availableTiming[_selectedDate]).sort((a, b) {
-      int val = a.fromHH.compareTo(b.fromHH);
-      return val == 0 ? a.fromMM.compareTo(b.fromMM) : val;
+     return a.fromHH.compareTo(b.fromHH);
+      
     });
 
     try {
-      return Container(
+      return Column(
+        
+        children: <Widget>[
+          priceDisplay(_available.parkingfee.toString()),
+          Container(
         width: _size.width * 0.85,
-        height: _size.height - _size.height * .27,
+        height: _size.height *.60,
         // color: Colors.yellow  ,
         child: ListView.builder(
           itemCount: _available.availableTiming[_selectedDate].toList().length,
@@ -201,23 +235,16 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
                 });
               },
               title: Text(
-                  '${(_available.availableTiming[_selectedDate])[index].fromHH.toString()} : ${(_available.availableTiming[_selectedDate])[index].fromMM.toString()}'),
-              leading: !_selectedDates.contains(
-                      _available.availableTiming[_selectedDate][index])
-                  ? Icon(Icons.local_parking)
-                  : Icon(Icons.done),
-              trailing: GestureDetector(
-                onTap: () {
-                  _showDialog(
-                      parkingkey,
-                      '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}',
-                      '${(_available.availableTiming[_selectedDate])[index].fromHH.toString()}:${(_available.availableTiming[_selectedDate])[index].fromMM.toString()}');
-                },
-                child: Text('BookNow'),
-              ),
+                  '${(_available.availableTiming[_selectedDate])[index].fromHH.toString()} : 00 to ${_available.availableTiming[_selectedDate][index].fromHH+1}:00 '),
+              leading:  Icon(Icons.local_parking)
+                ,
+              trailing:  !_selectedDates.contains(
+                      _available.availableTiming[_selectedDate][index])?Icon(Icons.check_box_outline_blank):Icon(Icons.check_box,color: Colors.green,),
             );
           },
         ),
+      )
+        ],
       );
     } catch (e) {
       return Center(
@@ -229,10 +256,10 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
   void _showDialog(
     String parkingkey,
     String onDate,
-    String slot,
+    List<String> slot,
   ) {
     // flutter defined function
-    showDialog(
+    showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
@@ -241,94 +268,150 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
           content: Text("Date: $onDate& Time: $slot"),
           actions: <Widget>[
             FlatButton(
-              child: new Text("Book"),
-              onPressed: () async {
-                if (await repository.bookaSlot(
+              child: new Text("Book Now"),
+              onPressed: ()  {
+              
+                 Navigator.of(context).pop(true);
+                  
+              }
+                
+              
+             
+            ),
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
+    ).then((onValue)async
+    {
+      if(onValue){
+        _scafold.currentState.showSnackBar(SnackBar(content: Text('Please Wait'),duration: Duration(seconds: 2),));
+        BookingModel mybooking=await repository.bookaSlot(
                   parkingkey,
                   onDate,
                   slot,
-                )) {
-                  _scafold.currentState.showSnackBar(SnackBar(
-                    content: Text('Your booking is done'),
-                    duration: Duration(seconds: 2),
-                    action: SnackBarAction(
-                      onPressed: () =>
-                          _scafold.currentState.hideCurrentSnackBar(),
-                      label: 'Close ',
-                    ),
-                  ));
-                  parkitlocationbloc.fetchlocation(widget.parkingspotkey);
-                } else {
-                  _scafold.currentState.showSnackBar(SnackBar(
-                    content: Text('Please try another slot it\'s booked'),
-                  ));
-                }
-                // await Future.delayed(Duration(seconds: 3),);
-                Navigator.of(context).pop(false);
-              },
-            ),
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+                );
+      switch (mybooking.bookingstatus) 
+      {
+        case true:
+          Navigator.pop(context);
+          break;
+        case false:
+          _onFail(context,mybooking);
+          break;
+        default:
+      }
+               
+      }
+      
+     
+    });
   }
 
-  void _showDialogformultiplebooking(String parkingkey) {
-    String _displaymsg = 'Date & Time';
-    _selectedDates.forEach((f) {
-      setState(() {
-        _displaymsg = '''$_displaymsg ${f.fromHH}:${f.fromMM}''';
-      });
-    });
-    // flutter defined function
-    showDialog(
+List<String> getlistOfslots()
+{
+  List<String> _spotdates=[];
+ for (var ondate in _selectedDates) 
+ {
+   _spotdates.add(ondate.fromHH.toString());
+ }
+ return _spotdates;
+}
+String getbookingDate()
+{
+return '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
+}
+
+_onSuccess(context)
+{
+   Alert(
       context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: Text("You Booking Details"),
-          content: Text(_displaymsg),
-          actions: <Widget>[
-            FlatButton(
-              child: new Text("Book"),
-              onPressed: () async {
-                if (true) {
-                  _scafold.currentState.showSnackBar(SnackBar(
-                    content: Text('Your booking is done'),
-                    duration: Duration(seconds: 2),
-                    action: SnackBarAction(
-                      onPressed: () =>
-                          _scafold.currentState.hideCurrentSnackBar(),
-                      label: 'Close ',
-                    ),
-                  ));
-                  // parkitlocationbloc.fetchlocation(widget.parkingspotkey);
-                } else {
-                  _scafold.currentState.showSnackBar(SnackBar(
-                    content: Text('Please try another slot it\'s booked'),
-                  ));
-                }
-                // await Future.delayed(Duration(seconds: 3),);
-                Navigator.of(context).pop(false);
-              },
-            ),
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+      type: AlertType.success,
+      title: "Success",
+      desc: "You have booked succesfully",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "FLAT",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context),
+          color: Color.fromRGBO(0, 179, 134, 1.0),
+        ),
+        DialogButton(
+          child: Text(
+            "Close",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+             Navigator.pop(context);
+              Navigator.pop(context);
+          },
+          gradient: LinearGradient(colors: [
+            Color.fromRGBO(116, 116, 191, 1.0),
+            Color.fromRGBO(52, 138, 199, 1.0)
+          ]),
+        )
+      ],
+    ).show();
+}
+_onFail(BuildContext context, BookingModel model)
+{
+  String title='Fail',reason='Unknown Error';
+  switch (model.type) {
+    case 'time':
+     title='Follwoing time is not available now';
+    reason=model.reason ;
+      break;
+    case 'balance':
+    title='Less Balance';
+    reason=model.reason ;
+    break;
+    case 'booking':
+    title='Something went while booking';
+    reason=model.reason ;
+    break;
+    default:
+    title='Fail';
+    reason='Unknown Error';
+     
   }
+  Alert(
+      context: context,
+      type: AlertType.error,
+      title: title,
+      desc: reason,
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Balance",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context),
+          color: Color.fromRGBO(0, 179, 134, 1.0),
+        ),
+        DialogButton(
+          child: Text(
+            "Close",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            
+            Navigator.pop(context);
+            Navigator.pop(context);},
+          gradient: LinearGradient(colors: [
+            Color.fromRGBO(116, 116, 191, 1.0),
+            Color.fromRGBO(52, 138, 199, 1.0)
+          ]),
+        )
+      ],
+    ).show();
+    
+}
 }

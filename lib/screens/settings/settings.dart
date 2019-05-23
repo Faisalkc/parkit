@@ -31,6 +31,7 @@ void updateSettings()async
     
   });
 }
+
   bool _riminderNotifi;
   bool _promoNotifi;
   @override
@@ -101,4 +102,9 @@ void updateSettings()async
     pormo?_firebaseMessaging.subscribeToTopic('promotions'):_firebaseMessaging.unsubscribeFromTopic('promotions');
   }
  } 
+ @override
+  void dispose() {
+    super.dispose();
+  }
+ 
 }

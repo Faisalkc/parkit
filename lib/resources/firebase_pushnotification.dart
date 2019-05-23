@@ -1,7 +1,6 @@
 import 'repository.dart';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 class FirebasePushNotification 
 {
     FirebaseMessaging _firebaseMessaging=FirebaseMessaging();

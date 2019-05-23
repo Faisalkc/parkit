@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parkit/Bloc/balance_bloc.dart';
 import 'package:parkit/model/history_model.dart';
+import 'package:parkit/resources/repository.dart';
 
 class RecentTransactionsPage extends StatelessWidget {
   @override
@@ -19,9 +20,9 @@ class _RecentTransactionsViewState extends State<RecentTransactionsView> {
   double _balance;
   @override
   void initState() {
-
+  transactions.getmyBal();
     _balance=0.0;
-    History().getCurrentBalance().then((amount)=>setState((){
+    history.getCurrentBalance().then((amount)=>setState((){
       _balance=amount;
     }));
     super.initState();
@@ -45,7 +46,12 @@ class _RecentTransactionsViewState extends State<RecentTransactionsView> {
         body: RefreshIndicator(
          
           onRefresh:  (){
-            return Future.delayed(Duration(seconds: 2));
+              transactions.getmyBal();
+              history.getCurrentBalance().then((amount)=>setState((){
+      _balance=amount;
+    }));
+            return repository.updateBalance();
+
           },
           child: ListView(
           children: <Widget>[
@@ -141,7 +147,7 @@ class _RecentTransactionsViewState extends State<RecentTransactionsView> {
   }
   Widget recendTransations()
   {
-    transactions.getmyBal();
+  
     return StreamBuilder(
 stream: transactions.location,
 

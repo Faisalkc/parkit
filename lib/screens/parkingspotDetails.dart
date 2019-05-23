@@ -8,6 +8,7 @@ import 'package:parkit/Bloc/customer_bloc.dart';
 import 'package:parkit/model/user_model.dart';
 import 'package:parkit/resources/repository.dart';
 import 'package:parkit/screens/booking/available_times.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ParkingSpotDetails extends StatefulWidget {
   String parkingSpotKey;
@@ -75,11 +76,13 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                 child: Stack(
                   children: <Widget>[
                     Hero(
-                      child: Image.network(
-                        snapshot.data.image[0],
+                      child: CachedNetworkImage(
+                        imageUrl: snapshot.data.image[0],
                         fit: BoxFit.cover,
-                        width: size.width,
-                        height: double.infinity,
+                       height: double.infinity,
+                       width: size.width,
+                        placeholder: (context, url) => new CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => new Icon(Icons.error),
                       ),
                       tag: 'spotimage',
                     ),
@@ -326,7 +329,9 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
           ],
         ),
         bottomNavigationBar: new Container(
+          
           decoration: new BoxDecoration(
+           
               //   shape: BoxShape.circle,
               gradient: new LinearGradient(
                   colors: [

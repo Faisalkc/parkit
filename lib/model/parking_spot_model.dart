@@ -25,6 +25,7 @@ class ParkingModel extends BaseModel
        List<dynamic> _img=snapshot['images'];
        _img.forEach((val)
        {
+         print(val);
          image.add(val);
        });
        this.userid=snapshot['userid'];

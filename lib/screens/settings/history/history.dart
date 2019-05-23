@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parkit/model/history_model.dart';
 
+import 'package:parkit/resources/repository.dart';
 
 class EarningsPage extends StatelessWidget {
   @override
@@ -10,7 +11,6 @@ class EarningsPage extends StatelessWidget {
 }
 
 class EarningsView extends StatefulWidget {
-  
   @override
   _EarningsViewState createState() => _EarningsViewState();
 }
@@ -21,10 +21,11 @@ class _EarningsViewState extends State<EarningsView> {
   double _mainBalance;
   @override
   void initState() {
-    _mainBalance=0.00;
-    History().getCurrentBalance().then((amount)=>setState((){
-      _mainBalance=amount;
-    }));
+    repository.updateBalance();
+    _mainBalance = 0.00;
+    History().getCurrentBalance().then((amount) => setState(() {
+          _mainBalance = amount;
+        }));
     super.initState();
   }
 
@@ -54,20 +55,19 @@ class _EarningsViewState extends State<EarningsView> {
                           SizedBox(
                             width: 10,
                           ),
-                         SafeArea(
-                           child:  IconButton(
-                            onPressed: ()=> Navigator.pop(context),
-                            icon: Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.white,
-                              size: 28,
+                          SafeArea(
+                            child: IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
                           ),
-                         ),
                           SizedBox(
                             width: 10,
                           ),
-                          
                         ],
                       ),
                       Container(

@@ -1,34 +1,35 @@
 import 'base_model.dart';
 class SpotDate extends BaseModel
 {
-  int fromHH,fromMM,toHH,toMM;
-  int uintervel=30;
+  int fromHH,toHH;
   Map<String,dynamic> availableDates={};
-  SpotDate(String date,this.fromHH,this.fromMM,this.toHH,this.toMM)
+  SpotDate(String date,this.fromHH,this.toHH,)
   {
     Map<dynamic,dynamic> _time={};
-    do
+    if (toHH==00) 
+    {
+      toHH=24;  
+    }
+   while (fromHH!=toHH+1 )
     {
 
-      String _availabletiming='$fromHH:$fromMM';
-      print('$fromHH:$fromMM');
+      String _availabletiming='$fromHH:00';
+      print('$fromHH');
       _time[_availabletiming]=true;
-      fromMM=fromMM==00?30:00;
-      fromHH=fromMM==00?fromHH+1:fromHH;
-      if(fromHH==24)
+      fromHH++;
+      if(fromHH==25)
       {
+       
         break;
       }
-      
+      _time['25:00']=25;
 
-          print(fromHH );
+        
     }
-    while (fromHH!=toHH || fromMM!=toMM);
-    _time['$fromHH:$fromMM']=true;
     availableDates[date]=_time;
-    print('done');
+    print('added timing');
+       print(availableDates);
 
   }
-  SpotDate.fromFirebase(this.fromHH,this.fromMM);
-
+  SpotDate.fromFirebase(this.fromHH);
 }
