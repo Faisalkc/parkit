@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,7 +18,6 @@ import 'package:parkit/model/available_model.dart';
 import 'package:parkit/model/favorites.dart';
 import 'favoritesDB.dart';
 import 'HistoryDB.dart';
-
 
 class Repository {
   final firebaseStorageApi = FirebaseStorageApi();
@@ -58,30 +58,28 @@ class Repository {
     Map<String, ParkingModel> _listofParkings =
         await FirebaseDatabaseApi().getavailableParking(customerLocation);
     _listofParkings.forEach((key, values) {
-      if(values.availability!=null)
-      {
+      if (values.availability != null) {
         if (values.availability.availableTiming.length > 0) {
-        MarkerId markerId = MarkerId(key);
-        Marker marker = Marker(
-          markerId: markerId,
-          icon: BitmapDescriptor.fromAsset('assets/images/mapicon.png'),
-          position: values.location.latLng,
-          infoWindow: InfoWindow(
-            title: values.spotname,
-            snippet: 'Ratings:' + values.votes.toString(),
-          ),
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        ParkingSpotDetails(parkingSpotKey: key)));
-          },
-        );
-        markers[markerId] = marker;
+          MarkerId markerId = MarkerId(key);
+          Marker marker = Marker(
+            markerId: markerId,
+            icon: BitmapDescriptor.fromAsset('assets/images/mapicon.png'),
+            position: values.location.latLng,
+            infoWindow: InfoWindow(
+              title: values.spotname,
+              snippet: 'Ratings:' + values.votes.toString(),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          ParkingSpotDetails(parkingSpotKey: key)));
+            },
+          );
+          markers[markerId] = marker;
+        }
       }
-      }
-      
     });
     return markers;
   }
@@ -191,9 +189,8 @@ class Repository {
     return firebaseDatabase.getPaymentMethods();
   }
 
-  Future<BookingModel> bookaSlot(String parkingkey, String onDate, List<String> times) async 
-  {
-    print('booking started');
+  Future<BookingModel> bookaSlot(
+      String parkingkey, String onDate, List<String> times) async {
     final user = await FirebaseAuth.instance.currentUser();
     return firebaseDatabase.bookaSlot(parkingkey, onDate, times, user.uid);
   }
@@ -201,10 +198,38 @@ class Repository {
   updateFCM(String tocken) async {
     firebaseDatabase.updateFCM(tocken);
   }
-  Future<void> updateBalance()async
-  {
-     final user = await FirebaseAuth.instance.currentUser();
-     firebaseDatabase.updateBalance(user.uid);
+
+  Future<void> updateBalance() async {
+    final user = await FirebaseAuth.instance.currentUser();
+    firebaseDatabase.updateBalance(user.uid);
+  }
+
+  updateTransactions() async {
+    
+    final data = await firebaseDatabase.updatetransacctions();
+    HttpsCallable resp =  CloudFunctions.instance.getHttpsCallable(functionName: 'readreciptforTransaction');
+    if (data != null) {
+      Map<dynamic, dynamic> _transactionsdata = data.value;
+      _transactionsdata.forEach((key, val) {
+        if (val['read'].toString() == 'n') 
+        {
+          History his = History.fromFirebase(val, key);
+          historyDB.addToMyHistory(his).then((_){
+            resp.call(
+              {
+                'transactionid':key.toString(),
+              }
+            ).then((res){
+              print(res.data);
+            }).catchError((onError){
+              print
+              (onError);
+            });
+          });
+
+        }
+      });
+    }
   }
 }
 

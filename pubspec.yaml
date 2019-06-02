@@ -26,7 +26,6 @@ dependencies:
   shared_preferences: ^0.5.2
   google_maps_flutter: ^0.5.6
   flutter_swiper: ^1.1.6
-  table_calendar: ^1.1.4
   intl: ^0.15.8
   rflutter_alert: ^1.0.2
   firebase_auth: ^0.8.0+1
@@ -85,6 +84,11 @@ flutter:
     fonts:
     - asset: assets/fonts/Raleway/Raleway-Regular.ttf
     - asset: assets/fonts/Raleway/Raleway-Italic.ttf
+      style: italic
+  - family: OpenSans
+    fonts:
+    - asset: assets/fonts/open-sans/OpenSans-Light.ttf
+    - asset: assets/fonts/open-sans/OpenSans-Italic.ttf
       style: italic
   #         - asset: assets/fonts/songer/Schyler-Italic.ttf
   #         - asset: assets/fonts/songer/Schyler-Italic.ttf

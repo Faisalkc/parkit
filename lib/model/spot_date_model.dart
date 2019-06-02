@@ -1,9 +1,10 @@
 import 'base_model.dart';
 class SpotDate extends BaseModel
 {
+  int price;
   int fromHH,toHH;
   Map<String,dynamic> availableDates={};
-  SpotDate(String date,this.fromHH,this.toHH,)
+  SpotDate(String date,this.fromHH,this.toHH,[int price])
   {
     Map<dynamic,dynamic> _time={};
     if (toHH==00) 
@@ -22,7 +23,7 @@ class SpotDate extends BaseModel
        
         break;
       }
-      _time['25:00']=25;
+      _time['25:00']=price??25;
 
         
     }

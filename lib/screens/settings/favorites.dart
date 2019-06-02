@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:parkit/Bloc/myfavlist_bloc.dart';
+import 'package:parkit/Widget/customBottomNavigation.dart';
 import 'package:parkit/model/favorites.dart';
+import 'package:parkit/screens/booking/available_times.dart';
 import 'package:parkit/screens/parkingspotDetails.dart';
 
 class Favorites extends StatefulWidget {
@@ -9,6 +11,7 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
+  
   @override
   void initState() {
      myfavlistbloc.myfavlistbloc(); 
@@ -18,6 +21,11 @@ class _FavoritesState extends State<Favorites> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      bottomNavigationBar: bottomAppBar(context,1),
       body: favlist(),
     );
   }
@@ -56,34 +64,37 @@ class _FavoritesState extends State<Favorites> {
 
   Row buildApartmentList(BuildContext context, int index) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Column(
+          
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(top: 8),
-              width: 24,
-              height: 24,
+
+              margin: EdgeInsets.only(top: 8,),
+              width: 20,
+              height: 20,
               decoration:
                   BoxDecoration(shape: BoxShape.circle, color: Colors.black87),
             ),
             Container(
               width: 2,
               height: MediaQuery.of(context).size.height * 0.46,
-              margin: EdgeInsets.only(top: 8),
+              margin: EdgeInsets.only(top: 8,),
               color: Colors.grey,
             )
           ],
         ),
         Container(
-          margin: EdgeInsets.only(left: 22),
+          margin: EdgeInsets.only(left: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
                 child: Text(
                   FavoritesModel.favlistavailable[index].spotname,
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ),
               // Container(
@@ -139,7 +150,7 @@ class _FavoritesState extends State<Favorites> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
                                 FlatButton(
-                                  onPressed: () {},
+                                  onPressed: () =>Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context)=>ShowtimeDateSelector(parkingspotkey: FavoritesModel.favlistavailable[index].parkingKey))),
                                   child: Wrap(
                                     spacing: 4,
                                     children: <Widget>[

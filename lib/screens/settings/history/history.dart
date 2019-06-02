@@ -23,10 +23,14 @@ class _EarningsViewState extends State<EarningsView> {
   void initState() {
     repository.updateBalance();
     _mainBalance = 0.00;
-    History().getCurrentBalance().then((amount) => setState(() {
+    history.getCurrentBalance().then((amount) => setState(() {
           _mainBalance = amount;
         }));
     super.initState();
+  }
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

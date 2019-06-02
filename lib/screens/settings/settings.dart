@@ -29,6 +29,7 @@ void updateSettings()async
       promotionNotifications();
     }
     
+    
   });
 }
 

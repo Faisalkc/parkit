@@ -19,10 +19,10 @@ class HistoryDB {
 
   Future<List<Map<dynamic, dynamic>>> getMyHistory() async {
 
-    return await database.rawQuery('SELECT * FROM his');
+    return await database.rawQuery('SELECT * FROM his ORDER BY txndate DESC');
   }
 
-  addToMyHistory(History data) async {
+  Future<void>addToMyHistory(History data) async {
     await database.transaction((txn) async {
       int id2 = await txn.rawInsert(
           'INSERT INTO his(txnid, type, txnmethod,amount,status,txndate) VALUES(?, ?, ?, ?,?,?)',

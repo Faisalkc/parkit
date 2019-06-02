@@ -17,6 +17,7 @@ class _AddPaymentMethodViewState extends State<AddPaymentMethodView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text("Add Payment Method"),

@@ -7,7 +7,7 @@ class AvailableModel extends BaseModel {
 
   bool suspended;
   SpotDate soptDates;
-  Map<DateTime, List<SpotDate>> availableTiming = {};
+  Map<DateTime, List<SpotDate>> availableTiming ={};
 
   AvailableModel.forFirebase(this.soptDates) {
     this.suspended = false;
@@ -15,7 +15,9 @@ class AvailableModel extends BaseModel {
   AvailableModel.fromFirebase(dynamic snapshot) {
     final datenow = DateTime.now();
     Map<dynamic, dynamic> _dates = snapshot;
-    _dates.forEach((k, v) {
+    _dates
+    ..forEach((k, v) {
+
       if (extractDate(k).isAfter(
               DateTime(datenow.year, datenow.month, datenow.day-1 )) 
           ) {
@@ -30,13 +32,20 @@ class AvailableModel extends BaseModel {
             if (avail == true) {
               final time = extractTime(timing.toString());
               SpotDate _s = SpotDate.fromFirebase(time.hour,);
+              if(parkingfee!=null)
+              {
+                _s.price=parkingfee.round();
+              }
               _temp.add(_s);
             }
             else if(timing.toString()=='25:00')
             {print('found price' +avail.toString());
+            
               parkingfee=double.parse(avail.toString());
-              print(parkingfee);
+              _temp.first.price=parkingfee.round();
+             
             }
+            
             
           } catch (e) {
             print(e);
@@ -44,9 +53,11 @@ class AvailableModel extends BaseModel {
         });
         availableTiming[extractDate(k)] = _temp;
       }
+      availableTiming.keys.toList().sort((a,b)=> a.compareTo(b));
     });
+    
   }
-
+ 
   Map<String, dynamic> availabletoJson() {
     return soptDates.availableDates;
   }

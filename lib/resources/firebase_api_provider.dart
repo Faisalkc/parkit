@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,7 +10,6 @@ import 'package:parkit/model/parking_spot_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parkit/model/payment_model.dart';
 import 'package:parkit/model/user_model.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'favoritesDB.dart';
 
 class FirebaseApiProvider {
@@ -399,5 +399,10 @@ class FirebaseDatabaseApi extends FirebaseApiProvider {
         .update(_model.availabletoJson())
         .then((_) => true)
         .catchError((onError) => false);
+  }
+  Future<DataSnapshot> updatetransacctions()async
+  {
+    final user=await FirebaseAuth.instance.currentUser();
+    return await userReference.child(user.uid).child('transactions').once();
   }
 }

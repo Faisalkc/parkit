@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,13 +14,14 @@ import 'package:parkit/screens/listingScreen/Listing.dart';
 import 'package:parkit/resources/repository.dart';
 import 'package:parkit/screens/settings/favorites.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'model/history_model.dart';
 import 'resources/favoritesDB.dart';
+import 'screens/searching_screen.dart';
 import 'screens/settings/history/earnings_details.dart';
 import 'screens/settings/history/promotions.dart';
 import 'screens/settings/history/recent_transactions.dart';
 
 void main() {
+  
   initializeDateFormatting().then((_) => runApp(MyApp()));
   favoritesDb;
   historyDB;
@@ -42,7 +44,7 @@ class MyApp extends StatelessWidget {
         '/promotions': (context) => PromotionsPage(),
         '/authpage': (context) => UserDetails()
       },
-      theme: ThemeData(fontFamily: 'Raleway', primarySwatch: Colors.grey),
+      theme: ThemeData(fontFamily: 'Raleway', primarySwatch: Colors.grey,iconTheme: IconThemeData(color: Colors.grey)),
     );
   }
 }
@@ -56,7 +58,7 @@ typedef Marker MarkerUpdateAction(Marker marker);
 
 class _MyHomePageState extends State<MyHomePage> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  static LatLng center = const LatLng(-33.86711, 151.1947171);
+  static LatLng center = const LatLng(24.485229, 54.369438);
 
   GoogleMapController controller;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -74,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         center = onValue;
         checkingforlocatiuon();
+        _goToTheLake();
       });
     });
     super.initState();
@@ -103,11 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
       repository.updateFCM(token);
       print(token);
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   Future<void> _goToTheLake() async {
@@ -171,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         bottomNavigationBar: bottomAppBar(context, 0),
         body: Stack(
+
           overflow: Overflow.clip,
           children: <Widget>[
             Container(
@@ -184,25 +183,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   markers: Set<Marker>.of(markers.values),
                 )),
-            Padding(
+            Hero(
+              tag: 'search',
+              child: GestureDetector(
+                onTap: ()=>Navigator.of(context)
+.push(MaterialPageRoute(builder: (BuildContext context)=>Searching())),
+                child: Padding(
               padding: EdgeInsets.all(32),
-              child: TextField(
-                keyboardAppearance: Brightness.light,
-                decoration: InputDecoration(
-                    enabled: true,
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.black,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.circular(20)),
-                    hintText: 'Search',
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.yellow,
-                            width: 20,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.circular(20))),
+              child: Container(
+                height: 40,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(5,),border: Border.all(color: Colors.black,),),
+                child: Row(
+                  
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                   Padding(
+                     padding: EdgeInsets.only(left:8),
+                     child:  Text('Search'),
+                   ),
+                    Icon(Icons.search)
+                  ],
+                ),
+              ),
+            ),
               ),
             ),
           ],

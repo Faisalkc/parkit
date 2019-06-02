@@ -61,14 +61,15 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
           Marker(markerId: markerid, position: snapshot.data.location.latLng)
     };
     return Scaffold(
+
         body: CustomScrollView(
           slivers: <Widget>[
             SliverAppBar(
-              leading: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(Icons.arrow_back)),
+              leading:IconButton(
+                
+                onPressed: ()=>Navigator.of(context).pop(),
+                icon: Icon(Icons.arrow_back_ios,color: Colors.white,size:24,),
+              ),
 
               flexibleSpace: FlexibleSpaceBar(
                   background: Container(
@@ -244,78 +245,58 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            children: <Widget>[
-                              Icon(
-                                Icons.location_on,
-                                color: Colors.black,
-                              ),
-                              Text(
-                                snapshot.data.location.city,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )
-                            ],
-                          ),
-                        ),
+                        
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "About this Parking",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Text(
-                              snapshot.data.description != null
-                                  ? snapshot.data.description
-                                  : '',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Text(
-                              "Read More....",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                        ],
+                    ListTile(
+                      leading: Icon(Icons.location_on,color: Colors.black
                       ),
+                      title: Text(
+                                snapshot.data.location.city,
+                                style: TextStyle(fontWeight: FontWeight.normal),
+                              ),
+                              subtitle:  Text(
+                                snapshot.data.location.address1,
+                                style: TextStyle(fontWeight: FontWeight.normal),
+                              ),
                     ),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: Text(
-                              "Check in: After 3pm",
-                              style: TextStyle(
-                                  color: Colors.black54, fontSize: 16.0),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                          child: Text(
-                            "Check Out:11am",
-                            style: TextStyle(
-                                color: Colors.black54, fontSize: 16.0),
-                          ),
-                        ),
-                      ],
+                     ListTile(
+                      leading: Icon(Icons.local_activity,color: Colors.black,),
+                      title: Text(
+                                snapshot.data.description,
+                                style: TextStyle(fontWeight: FontWeight.normal),
+                              ),
                     ),
+                    
+                    // Row(
+                    //   children: <Widget>[
+                    //     Expanded(
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.only(bottom: 10.0),
+                    //         child: Text(
+                    //           "Check in: After 3pm",
+                    //           style: TextStyle(
+                    //               color: Colors.black54, fontSize: 16.0),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding:
+                    //           const EdgeInsets.only(bottom: 10.0, right: 10.0),
+                    //       child: Text(
+                    //         "Check Out:11am",
+                    //         style: TextStyle(
+                    //             color: Colors.black54, fontSize: 16.0),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     SizedBox(
+                      
                       height: 400.0,
                       child: GoogleMap(
+
+                        myLocationEnabled: false,
                         onMapCreated: _onMapCreated,
                         markers: Set<Marker>.of(markers.values),
                         initialCameraPosition: CameraPosition(
@@ -351,7 +332,7 @@ class _ParkingSpotDetailsState extends State<ParkingSpotDetails> {
             },
             child: new Padding(
               padding: const EdgeInsets.all(24.0),
-              child: new Text("Book Now",
+              child: new Text("Check availability",
                   style: new TextStyle(
                       color: Colors.white,
                       fontSize: 22.0,

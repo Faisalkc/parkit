@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parkit/Bloc/user_bloc.dart';
+import 'package:parkit/Widget/customBottomNavigation.dart';
 import 'package:parkit/model/user_model.dart';
 import 'package:parkit/resources/repository.dart';
 import 'package:parkit/screens/auth/ProfilePage.dart';
@@ -50,6 +51,7 @@ class _UserDetailsState extends State<UserDetails> {
   }
   Widget buildContent(AsyncSnapshot<UserModel> snapshot, BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: bottomAppBar(context,2),
       body:  SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -92,9 +94,11 @@ class _UserDetailsState extends State<UserDetails> {
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 32.0),
       child: new Row(
         children: <Widget>[
-          InkResponse(
-              onTap: () => Navigator.of(context).pop(false),
-              child: Icon(Icons.clear, size: 32.0, color: Colors.white)),
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            icon: Icon(Icons.clear, size: 32.0, color: Colors.white),
+          ),
+          
           new Expanded(
             child: new Padding(
               padding: const EdgeInsets.only(left: 16.0),
@@ -210,7 +214,7 @@ class _UserDetailsState extends State<UserDetails> {
             AddAvailability()));
             },
             trailing: Icon(Icons.add),
-            title: Text('Add Availability'),
+            title: Text('Your Listings'),
           ),
           Divider(),
           ListTile(
@@ -371,7 +375,7 @@ class _UserDetailsState extends State<UserDetails> {
               style: TextStyle(color: Colors.red),
             ),
           ),
-          Divider(),
+         
         ],
       ),
     );
