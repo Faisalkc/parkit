@@ -7,7 +7,9 @@ import 'package:parkit/screens/auth/ProfilePage.dart';
 import 'package:parkit/screens/auth/auth_page.dart';
 import 'package:parkit/screens/auth/diagonal_clipper.dart';
 import 'package:parkit/screens/settings/availability.dart';
+import 'package:parkit/screens/settings/feedback.dart';
 import 'package:parkit/screens/settings/free_rides.dart';
+import 'package:parkit/screens/settings/getHElp.dart';
 import 'package:parkit/screens/settings/history.dart';
 import 'package:parkit/screens/settings/history/history.dart';
 import 'package:parkit/screens/settings/incompleteScreens.dart';
@@ -20,14 +22,12 @@ class UserDetails extends StatefulWidget {
 }
 
 class _UserDetailsState extends State<UserDetails> {
-
   final double _imageHeight = 256.0;
   bool showOnlyCompleted = false;
-
+  GlobalKey<ScaffoldState> _scafold = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
-  
   }
 
   @override
@@ -38,10 +38,8 @@ class _UserDetailsState extends State<UserDetails> {
       builder: (context, AsyncSnapshot<UserModel> snapshot) {
         if (snapshot.hasData) {
           return buildContent(snapshot, context);
-        } 
-        else if (snapshot.hasError) 
-        {
-           return AuthPage();
+        } else if (snapshot.hasError) {
+          return AuthPage();
         }
         return Container(
             padding: EdgeInsets.all(20.0),
@@ -49,29 +47,30 @@ class _UserDetailsState extends State<UserDetails> {
       },
     );
   }
+
   Widget buildContent(AsyncSnapshot<UserModel> snapshot, BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: bottomAppBar(context,2),
-      body:  SingleChildScrollView(
+      key: _scafold,
+      bottomNavigationBar: bottomAppBar(context, 2),
+      body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Stack(
-        children: <Widget>[
-          // _buildTimeline(),
-          _buildIamge(),
-          _buildTopHeader(),
-          _buildProfileRow(snapshot),
-        _buildBottomPart(snapshot, context),
-          // _buildFab(),
-        ],
-      ),
-      _userOptions(snapshot, context)
+              children: <Widget>[
+                // _buildTimeline(),
+                _buildIamge(),
+                _buildTopHeader(),
+                _buildProfileRow(snapshot),
+                _buildBottomPart(snapshot, context),
+                // _buildFab(),
+              ],
+            ),
+            _userOptions(snapshot, context)
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildIamge() {
     return new Positioned.fill(
@@ -98,7 +97,6 @@ class _UserDetailsState extends State<UserDetails> {
             onPressed: () => Navigator.of(context).pop(false),
             icon: Icon(Icons.clear, size: 32.0, color: Colors.white),
           ),
-          
           new Expanded(
             child: new Padding(
               padding: const EdgeInsets.only(left: 16.0),
@@ -111,7 +109,6 @@ class _UserDetailsState extends State<UserDetails> {
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -152,11 +149,10 @@ class _UserDetailsState extends State<UserDetails> {
                 ),
                 InkResponse(
                   onTap: () {
-
                     _goToProfilePage(_userdetails, context);
                   },
                   child: Text(
-                    _userdetails.data.displayName,  
+                    _userdetails.data.displayName,
                     style: new TextStyle(
                         fontSize: 14.0,
                         color: Colors.white,
@@ -179,7 +175,6 @@ class _UserDetailsState extends State<UserDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _buildMyTasksHeader(snapshot),
-          
         ],
       ),
     );
@@ -199,7 +194,6 @@ class _UserDetailsState extends State<UserDetails> {
         ));
   }
 
-
   Widget _userAccountOption(
       AsyncSnapshot<UserModel> snapshot, BuildContext context) {
     return Padding(
@@ -208,56 +202,51 @@ class _UserDetailsState extends State<UserDetails> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           ListTile(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            AddAvailability()));
+                  builder: (BuildContext context) => AddAvailability()));
             },
             trailing: Icon(Icons.add),
             title: Text('Your Listings'),
           ),
           Divider(),
           ListTile(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            EarningsPage()));
+                  builder: (BuildContext context) => EarningsPage()));
             },
             trailing: Icon(Icons.attach_money),
             title: Text('Balance'),
           ),
           Divider(),
           ListTile(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            PaymentPage()));
+                  builder: (BuildContext context) => PaymentPage()));
             },
             trailing: Icon(Icons.credit_card),
             title: Text('Payment Methods'),
           ),
           Divider(),
           ListTile(
-             onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            History()));
+                  builder: (BuildContext context) => History()));
             },
-            trailing: Icon(Icons.list ),
+            trailing: Icon(Icons.list),
             title: Text('History'),
           ),
           Divider(),
           ListTile(
-            onTap: ()=>Navigator.pushNamed(context, '/favorites'),
+            onTap: () => Navigator.pushNamed(context, '/favorites'),
             trailing: Icon(Icons.favorite_border),
             title: Text('Favorites'),
           ),
           Divider(),
           ListTile(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            Settings()));
+                  builder: (BuildContext context) => Settings()));
             },
             trailing: Icon(Icons.settings),
             title: Text('Settings'),
@@ -267,6 +256,7 @@ class _UserDetailsState extends State<UserDetails> {
       ),
     );
   }
+
   Widget _userPromotionOption(
       AsyncSnapshot<UserModel> snapshot, BuildContext context) {
     return Padding(
@@ -275,26 +265,22 @@ class _UserDetailsState extends State<UserDetails> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           ListTile(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            FreeRidesPage()));
+                  builder: (BuildContext context) => FreeRidesPage()));
             },
             trailing: Icon(Icons.people_outline),
             title: Text('Invite Friend'),
-            
           ),
           Divider(),
           ListTile(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            FreeRidesPage()));
+                  builder: (BuildContext context) => FreeRidesPage()));
             },
-            trailing: Icon(Icons.local_parking  ),
+            trailing: Icon(Icons.local_parking),
             title: Text('Invite Host'),
           ),
-          
           Divider(),
         ],
       ),
@@ -310,7 +296,7 @@ class _UserDetailsState extends State<UserDetails> {
         children: <Widget>[
           ListTile(
             onTap: () {
-             Navigator.pushNamed(context, '/ListAPark');
+              Navigator.pushNamed(context, '/ListAPark');
             },
             trailing: Icon(Icons.add_box),
             title: Text('List Your Space'),
@@ -329,16 +315,63 @@ class _UserDetailsState extends State<UserDetails> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           ListTile(
-            onTap: () {
-              _goToProfilePage(snapshot, context);
-            },
+            onTap: () =>Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => GetHelp())),
             trailing: Icon(Icons.help_outline),
             title: Text('Get help'),
           ),
           Divider(),
           ListTile(
             onTap: () {
-              _goToProfilePage(snapshot, context);
+              return showModalBottomSheet<int>(
+                context: context,
+                elevation: 10,
+
+                builder: (BuildContext context) {
+                  return new Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Text(
+                          'Share your feedback',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                        
+                      ),
+                      new ListTile(
+                        leading: Text(
+                          'How satisfied are you with ParkiT',
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      new ListTile(
+                        onTap: ()=>Feedback.forTap(context),
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            IconButton(icon:Icon(Icons.star_border) ,onPressed: ()=>Navigator.of(context).pop(1),),
+                            IconButton(icon:Icon(Icons.star_border) ,onPressed: ()=>Navigator.of(context).pop(2),),
+                            IconButton(icon:Icon(Icons.star_border) ,onPressed: ()=>Navigator.of(context).pop(3),),
+                            IconButton(icon:Icon(Icons.star_border) ,onPressed: ()=>Navigator.of(context).pop(4),),
+                            IconButton(icon:Icon(Icons.star_border) ,onPressed: ()=>Navigator.of(context).pop(5),),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      )
+                    ],
+                  );
+                },
+              ).then((int rating)
+              {
+                _scafold.currentState.showSnackBar(SnackBar(content: ListTile(leading: Icon(Icons.done_outline,color: Colors.greenAccent,),title: Text('Tankyou for $rating rating'),trailing: IconButton(icon: Icon(Icons.close),onPressed: ()=>_scafold.currentState.removeCurrentSnackBar(),),),) );
+              });
             },
             trailing: Icon(Icons.feedback),
             title: Text('Giv us feedback'),
@@ -358,16 +391,17 @@ class _UserDetailsState extends State<UserDetails> {
         children: <Widget>[
           ListTile(
             onTap: () {
-            Navigator.of(context)
-.push(MaterialPageRoute(builder: (BuildContext context)=>LicensePage()));            },
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => LicensePage()));
+            },
             trailing: Icon(Icons.assignment),
             title: Text('Terms of Service'),
           ),
           Divider(),
           ListTile(
             onTap: () {
-             Repository().logout();
-             Navigator.of(context).pop(false);
+              Repository().logout();
+              Navigator.of(context).pop(false);
             },
             trailing: Icon(Icons.exit_to_app),
             title: Text(
@@ -375,7 +409,6 @@ class _UserDetailsState extends State<UserDetails> {
               style: TextStyle(color: Colors.red),
             ),
           ),
-         
         ],
       ),
     );
@@ -409,18 +442,21 @@ class _UserDetailsState extends State<UserDetails> {
                   height: 18,
                 ),
                 GestureDetector(
-                  onTap: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context)=>IncompleteStepts(snapshot:snapshot ,)));
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => IncompleteStepts(
+                              snapshot: snapshot,
+                            )));
                   },
                   child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    stepContainerLeft(context, 'red'),
-                    stepContainer(context, 'red'),
-                    stepContainer(context, 'red'),
-                    stepContainerRight(context),
-                  ],
-                ),
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      stepContainerLeft(context, 'red'),
+                      stepContainer(context, 'red'),
+                      stepContainer(context, 'red'),
+                      stepContainerRight(context),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 10,
@@ -474,7 +510,6 @@ class _UserDetailsState extends State<UserDetails> {
 
   _goToProfilePage(AsyncSnapshot<UserModel> snapshot, BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) =>
-            ProfilePage(snapshot: snapshot)));
+        builder: (BuildContext context) => ProfilePage(snapshot: snapshot)));
   }
 }

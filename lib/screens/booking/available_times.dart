@@ -59,7 +59,7 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
                     getbookingDate(),
                       getlistOfslots(),price)
                     
-                    )) //_showDialog(widget.parkingspotkey,getbookingDate(),getlistOfslots())
+                    )) 
               : null,
           child: _selectedDates.isNotEmpty
               ? new Padding(
@@ -92,9 +92,9 @@ class _ShowtimeDateSelectorState extends State<ShowtimeDateSelector> {
            
            snapshot.data.availability.availableTiming.keys
                 .toList()
-                .sort((a, b) {
+                ..sort((a, b) {
                   print(a.compareTo(b));
-              return a.compareTo(b);
+              return a.day.compareTo(b.day);
             });
             return SafeArea(
               child: Column(

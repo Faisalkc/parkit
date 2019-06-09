@@ -68,6 +68,7 @@ flutter:
   - assets/icons/prkit_icon.png
   - assets/images/mapicon.png
   - assets/images/background.jpeg
+  - assets/images/help.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
 

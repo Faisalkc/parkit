@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:parkit/model/balance_model.dart';
 import 'package:parkit/model/booking_model.dart';
-import 'package:parkit/model/history_model.dart';
 import 'package:parkit/model/parking_spot_model.dart';
 import 'package:parkit/model/payment_model.dart';
 import 'package:parkit/resources/repository.dart';
